@@ -71,6 +71,7 @@
 **Frontend**:
     - **Web**: React.js para criar uma interface de usuário interativa e responsiva.
     - **Mobile**: React Native  desenvolver aplicativos móveis para iOS e Android.
+    
 **Backend**:
     - **Linguagem**: Node.js com Express.js
     - **Banco de Dados**: MongoDB (NoSQL)
