@@ -6,7 +6,7 @@ export default function App() {
     <View style={styles.container}>
       <Text style={styles.title}>piSwen</Text>
       <Text>Open up App.tsx to start working on your app!</Text>
-      <h1>Teste Gamer</h1>
+      <Text>Changes you make will automatically reload.</Text>
       <StatusBar style="auto" />
     </View>
   );
