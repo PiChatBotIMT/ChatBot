@@ -70,10 +70,10 @@
 ## Tecnologias utilizadas:
 **Frontend**:
     - **Web**: React.js para criar uma interface de usuário interativa e responsiva.
-    - **Mobile**: React Native  desenvolver aplicativos móveis para iOS e Android.
+    - **Mobile**: React Native desenvolver aplicativos móveis para iOS e Android.
     
 **Backend**:
-    - **Linguagem**: Node.js com Express.js
+    - **Linguagem**: Node.js e Expo go
     - **Banco de Dados**: MongoDB (NoSQL)
 
 ---
