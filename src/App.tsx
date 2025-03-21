@@ -5,8 +5,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>piSwen</Text>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Text>Changes you make will automatically reload.</Text>
+      <Text>teste!</Text>
+      <Text>Changes jkgh masssssseload.</Text>
       <StatusBar style="auto" />
     </View>
   );
