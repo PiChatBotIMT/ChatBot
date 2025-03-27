@@ -1,10 +1,10 @@
-# piSwen
+# ChatBot
 
  <h3>Repositório do grupo de PII</h3>
   <p>3° Semestre dos cursos de SIN do Instituto Mauá de Técnologia</p>
 </div>
 
-<p>Projeto Integrador Interdisciplinar, com objetivo de desenvolver uma Multi-Plataforma como o SWEN filmes, projeto realizado pelo Instituto de Engenharia, com apoio do Instituto Mauá de Tecnologia.</p>
+<p>Projeto Integrador Interdisciplinar, com objetivo de desenvolver uma Multi-Plataforma ChatBot projeto realizado pelo Instituto de Engenharia, com apoio do Instituto Mauá de Tecnologia.</p>
 
 ---
 
@@ -45,25 +45,6 @@
 
 ## 🔧 Funcionalidades:
 
- 1. **Cadastro e Login**:
-    - Fluxo de registro de novos usuários.
-    - Fluxo de login com autenticação segura.
-    - Recuperação de senha.
-2. **Navegação e Pesquisa**:
-    - Navegação por categorias e gêneros.
-    - Barra de pesquisa para encontrar filmes e séries.
-3. **Reprodução de Vídeo**:
-    - Fluxo de seleção e reprodução de vídeos.
-    - Controle de qualidade de vídeo e legendas.
-4. **Gerenciamento de Conteúdo**:
-    - Upload e gerenciamento de vídeos.
-    - Edição de metadados (títulos, descrições, etc.).
-5. **Perfil do Usuário**:
-    - Visualização e edição de perfil.
-    - Histórico de visualização e lista de favoritos.
-6. **Pagamentos e Assinaturas**:
-    - Fluxo de pagamento para assinaturas.
-    - Gerenciamento de planos de assinatura.
 
 ---
 
