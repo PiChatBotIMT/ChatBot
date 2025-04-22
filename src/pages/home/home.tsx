@@ -1,25 +1,37 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Tela2 from '../tela2/tela2';
-import styles from './home.styles'; 
+import { View, Text, TouchableOpacity } from 'react-native';
+import Chatbot from '../chat/chatBot'; 
+import styles from './home.styles';
+import Cardapio from '../cardapio/cardapio';
+import HistoricoPedidos from '../historico-pedidos/historico';
 
 const Stack = createStackNavigator();
 
 const HomeMenu: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Menu Principal</Text>
             <View style={styles.cardContainer}>
                 <TouchableOpacity
                     style={styles.card}
-                    onPress={() => navigation.navigate('Tela2')} // Navega para Tela2
+                    onPress={() => navigation.navigate('Chatbot')} 
                 >
-                    <Text style={styles.cardTitle}>Ir para o cardápio</Text>
-                    <Text style={styles.cardDescription}>Veja o cardápio disponível</Text>
+                    <Text style={styles.cardTitle}>Ir para o chat</Text>
                 </TouchableOpacity>
-                {/* Adicionar mais cards aqui para outras telas */}
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigation.navigate('HistoricoPedidos')} 
+                >
+                    <Text style={styles.cardTitle}>Ir para o historico de pedidos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigation.navigate('Cardapio')} 
+                >
+                    <Text style={styles.cardTitle}>Ir para o cardapio</Text>
+                </TouchableOpacity>
+                
             </View>
         </View>
     );
@@ -35,15 +47,23 @@ const Home: React.FC = () => {
                     options={{ title: 'Menu Principal' }}
                 />
                 <Stack.Screen
-                    name="Tela2"
-                    component={Tela2}
-                    options={{ title: 'Tela 2' }}
+                    name="Chatbot" // Nome da rota
+                    component={Chatbot} // Componente do chatbot
+                    options={{ title: 'ChatBot' }}
+                />
+                 <Stack.Screen
+                    name="Cardapio"
+                    component={Cardapio} 
+                    options={{ title: 'Cardapio' }}
+                />
+                  <Stack.Screen
+                    name="HistoricoPedidos"
+                    component={HistoricoPedidos} 
+                    options={{ title: 'HistoricoPedidos' }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
     );
 };
-
-
 
 export default Home;
