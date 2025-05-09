@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f9f9f9',
     },
     chatContainer: {
         padding: 10,
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     },
     botMessage: {
         alignSelf: 'flex-start',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#e6e6e6',
     },
     messageText: {
         fontSize: 16,
@@ -50,6 +50,43 @@ const styles = StyleSheet.create({
     sendButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    orderForm: {
+        padding: 10,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        margin: 10,
+    },
+    formLabel: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    textArea: {
+        height: 60,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        marginBottom: 10,
+    },
+    submitButton: {
+        backgroundColor: '#28a745',
+        borderRadius: 10,
+        paddingVertical: 10,
+        alignItems: 'center',
+    },
+    submitButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 10,
+        marginBottom: 10,
+        paddingHorizontal: 10,
+        backgroundColor: '#fff',
     },
 });
 

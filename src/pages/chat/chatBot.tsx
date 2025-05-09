@@ -20,121 +20,140 @@ const Chatbot: React.FC = () => {
     ]);
     const [input, setInput] = useState('');
     const [isOrdering, setIsOrdering] = useState(false); // Estado para controlar o fluxo de pedido
-    const [selectedItems, setSelectedItems] = useState<{ nome: string; preco: number; quantidade: number }[]>([]); // Itens selecionados
-    const [paymentMethod, setPaymentMethod] = useState<string | null>(null); // Método de pagamento
+    const [orderForm, setOrderForm] = useState({
+        items: [],
+        quantity: '',
+        paymentMethod: '',
+        description: '',
+    }); // Formulário de pedido
+    const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+const paymentOptions = ["Dinheiro", "Cartão", "Pix"];
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-    const menuItems = [
-        { id: 1, nome: 'Pizza Margherita', preco: 25.0 },
-        { id: 2, nome: 'Hambúrguer Clássico', preco: 18.5 },
-        { id: 3, nome: 'Salada Caesar', preco: 15.0 },
-        { id: 4, nome: 'Refrigerante', preco: 5.0 },
-        { id: 5, nome: 'Sobremesa Brownie', preco: 10.0 },
-    ];
-
-    const handleSend = async () => {
+    const handleSend = () => {
         if (input.trim() === '') return;
 
         const userMessage = { id: Date.now().toString(), text: input, sender: 'user' };
         setMessages((prevMessages) => [...prevMessages, userMessage]);
 
         if (isOrdering) {
-            if (!paymentMethod) {
-                // Escolha do método de pagamento
-                if (input === '1') {
-                    setPaymentMethod('Dinheiro');
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { id: (Date.now() + 1).toString(), text: 'Pagamento selecionado: Dinheiro. Digite "Confirmar" para finalizar o pedido.', sender: 'bot' },
-                    ]);
-                } else if (input === '2') {
-                    setPaymentMethod('Cartão');
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { id: (Date.now() + 1).toString(), text: 'Pagamento selecionado: Cartão. Digite "Confirmar" para finalizar o pedido.', sender: 'bot' },
-                    ]);
-                } else {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { id: (Date.now() + 1).toString(), text: 'Opção inválida. Escolha 1 para Dinheiro ou 2 para Cartão.', sender: 'bot' },
-                    ]);
-                }
-            } else {
-                // Finalizar pedido
-                if (input.toLowerCase() === 'confirmar') {
-                    const pedido = {
-                        itens: selectedItems,
-                        metodoPagamento: paymentMethod,
-                        total: selectedItems.reduce((sum, item) => sum + item.preco * item.quantidade, 0),
-                    };
-
-                    try {
-                        const response = await fetch('http://localhost:5000/pedidos', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(pedido),
-                        });
-
-                        if (response.ok) {
-                            setMessages((prevMessages) => [
-                                ...prevMessages,
-                                { id: (Date.now() + 1).toString(), text: 'Pedido concluído com sucesso! Obrigado.', sender: 'bot' },
-                            ]);
-                            setIsOrdering(false);
-                            setSelectedItems([]);
-                            setPaymentMethod(null);
-                        } else {
-                            throw new Error('Erro ao salvar o pedido.');
-                        }
-                    } catch (error) {
-                        Alert.alert('Erro', 'Não foi possível concluir o pedido. Tente novamente mais tarde.');
+            // Lógica para processar o formulário de pedido
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { id: (Date.now() + 1).toString(), text: 'Pedido enviado com sucesso!', sender: 'bot' },
+            ]);
+            // Enviar o pedido para a API
+            fetch('http://localhost:5000/pedidos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderForm),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        Alert.alert('Sucesso', 'Pedido enviado com sucesso!');
+                        setIsOrdering(false);
+                        setOrderForm({ items: [], quantity: '', paymentMethod: '', description: '' });
+                    } else {
+                        throw new Error('Erro ao enviar o pedido.');
                     }
-                } else {
+                })
+                .catch((error) => {
+                    Alert.alert('Erro', 'Não foi possível enviar o pedido. Tente novamente mais tarde.');
+                });
+        } else {
+            switch (input) {
+                case '1':
+                    navigation.navigate('Cardapio');
+                    break;
+                case '2':
+                    setIsOrdering(true);
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { id: (Date.now() + 1).toString(), text: 'Digite "Confirmar" para finalizar o pedido.', sender: 'bot' },
+                        { id: (Date.now() + 1).toString(), text: 'Qual será o seu pedido?', sender: 'bot' },
                     ]);
-                }
+                    break;
+                case '3':
+                    navigation.navigate('Histórico');
+                    break;
+                default:
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { id: (Date.now() + 1).toString(), text: 'Opção inválida. Por favor, escolha 1, 2 ou 3.', sender: 'bot' },
+                    ]);
             }
-        } else if (input === '2') {
-            // Iniciar fluxo de pedido
-            setIsOrdering(true);
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { id: (Date.now() + 1).toString(), text: 'Escolha os itens do menu digitando o número correspondente:', sender: 'bot' },
-                ...menuItems.map((item) => ({
-                    id: item.id.toString(),
-                    text: `${item.id} - ${item.nome} (R$ ${item.preco.toFixed(2)})`,
-                    sender: 'bot',
-                })),
-            ]);
-        } else {
-            // Outras opções
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { id: (Date.now() + 1).toString(), text: 'Opção inválida. Por favor, escolha 1, 2 ou 3.', sender: 'bot' },
-            ]);
         }
 
         setInput(''); // Limpa o campo de entrada
     };
 
-    const handleItemSelection = (itemId: number) => {
-        const item = menuItems.find((menuItem) => menuItem.id === itemId);
-        if (item) {
-            setSelectedItems((prevItems) => [...prevItems, { ...item, quantidade: 1 }]);
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { id: (Date.now() + 1).toString(), text: `Item adicionado: ${item.nome} (R$ ${item.preco.toFixed(2)})`, sender: 'bot' },
-                { id: (Date.now() + 2).toString(), text: 'Escolha mais itens ou digite "1" para Dinheiro ou "2" para Cartão.', sender: 'bot' },
-            ]);
-        } else {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { id: (Date.now() + 1).toString(), text: 'Item inválido. Escolha um item do menu.', sender: 'bot' },
-            ]);
-        }
-    };
+    const renderOrderForm = () => (
+        <View style={styles.orderForm}>
+            <Text style={styles.formLabel}>Selecione os itens:</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Itens (ex: Pizza, Refrigerante)"
+                value={orderForm.items.join(', ')}
+                onChangeText={(text) => setOrderForm((prev) => ({ ...prev, items: text.split(', ') }))}
+            />
+            <Text style={styles.formLabel}>Quantidade:</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Quantidade"
+                keyboardType="numeric"
+                value={orderForm.quantity}
+                onChangeText={(text) => setOrderForm((prev) => ({ ...prev, quantity: text }))}
+            />
+            <Text style={styles.formLabel}>Método de pagamento:</Text>
+            <View style={styles.pickerContainer}>
+            <View>
+  <TouchableOpacity
+    style={styles.input}
+    onPress={() => setShowPaymentOptions((prev) => !prev)}
+  >
+    <Text>
+      {orderForm.paymentMethod || "Selecione o método de pagamento"}
+    </Text>
+  </TouchableOpacity>
+  {showPaymentOptions && (
+    <View style={{ backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 4 }}>
+      {paymentOptions.map(option => (
+        <TouchableOpacity
+          key={option}
+          style={{ padding: 10 }}
+          onPress={() => {
+            setOrderForm(prev => ({ ...prev, paymentMethod: option }));
+            setShowPaymentOptions(false);
+          }}
+        >
+          <Text>{option}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  )}
+</View>
+        </View>
+            <Text style={styles.formLabel}>Descrição (opcional):</Text>
+            <TextInput
+                style={styles.textArea}
+                placeholder="Adicione uma descrição"
+                multiline
+                value={orderForm.description}
+                onChangeText={(text) => setOrderForm((prev) => ({ ...prev, description: text }))}
+            />
+            <TouchableOpacity
+                style={styles.submitButton}
+                onPress={() => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { id: (Date.now() + 1).toString(), text: 'Enviando pedido...', sender: 'bot' },
+                    ]);
+                    handleSend();
+                }}
+            >
+                <Text style={styles.submitButtonText}>Enviar Pedido</Text>
+            </TouchableOpacity>
+        </View>
+    );
 
     return (
         <KeyboardAvoidingView
@@ -151,24 +170,20 @@ const Chatbot: React.FC = () => {
                 )}
                 contentContainerStyle={styles.chatContainer}
             />
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Digite sua mensagem..."
-                    value={input}
-                    onChangeText={setInput}
-                    onSubmitEditing={() => {
-                        if (isOrdering && !paymentMethod) {
-                            handleItemSelection(Number(input));
-                        } else {
-                            handleSend();
-                        }
-                    }}
-                />
-                <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                    <Text style={styles.sendButtonText}>Enviar</Text>
-                </TouchableOpacity>
-            </View>
+            {isOrdering && renderOrderForm()}
+            {!isOrdering && (
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Digite sua mensagem..."
+                        value={input}
+                        onChangeText={setInput}
+                    />
+                    <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+                        <Text style={styles.sendButtonText}>Enviar</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </KeyboardAvoidingView>
     );
 };
