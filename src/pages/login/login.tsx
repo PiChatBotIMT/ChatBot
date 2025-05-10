@@ -3,7 +3,9 @@ import { View, Text, TextInput, Button, Alert, TouchableOpacity, Platform } from
 import axios from 'axios';
 import styles from './login.styles';
 
-const Login = ({ navigation }: { navigation: any }) => {
+const Login = ({ navigation, setIsAdmin }: { navigation: any, setIsAdmin: (isAdmin: boolean, email: string) => void }) => {
+      const ADMIN_EMAIL = "admin@admin.com";
+    const ADMIN_SENHA = "admin123";
     // Para desenvolvimento, use diferentes URLs conforme o ambiente
     let apiBaseUrl = '';
     if (__DEV__) {
@@ -44,6 +46,18 @@ const Login = ({ navigation }: { navigation: any }) => {
                 showAlert('Erro', 'Por favor, preencha todos os campos.');
                 return;
             }
+
+             if (email === ADMIN_EMAIL && senha === ADMIN_SENHA) {
+            setIsAdmin(true, email);
+            showAlert(
+                'Bem-vindo, Admin!',
+                'Login de administrador realizado com sucesso!',
+                () => navigation.navigate('HomeMenu')
+            );
+            return;
+        }
+        // ...login comum...
+        setIsAdmin(false, email);
     
             // 2. Validação do formato do email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
