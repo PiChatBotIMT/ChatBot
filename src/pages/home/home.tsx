@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Chatbot from '../chat/chatBot';
 import styles from './home.styles';
@@ -12,26 +12,32 @@ import Pedidos from '../visu-pedidos/pedidos';
 
 const Stack = createStackNavigator();
 
-const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation, isAdmin }) => (
-    <View style={styles.container}>
-        <View style={styles.cardContainer}>
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Chatbot')}>
-                <Text style={styles.cardTitle}>Ir para o chat</Text>
+
+const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation }) => {
+    return (
+        <View style={styles.container}>
+            <Image source={require('../../assets/bot-icon.png')} style={styles.botIcon} />
+            <Text style={styles.welcomeText}>Bem-Vindo ao Restaurante</Text>
+
+            <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('Chatbot')}>
+                <Text style={styles.chatButtonText}>Como posso ajudar?</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('HistoricoPedidos')}>
-                <Text style={styles.cardTitle}>Ir para o historico de pedidos</Text>
-            </TouchableOpacity>
+
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Cardapio')}>
-                <Text style={styles.cardTitle}>Ir para o cardapio</Text>
+                <Image source={require('../../assets/menu-icon.png')} style={styles.cardIcon} />
+                <Text style={styles.cardTitle}>Cardápio</Text>
             </TouchableOpacity>
-            {isAdmin && (
-                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Pedidos')}>
-                    <Text style={styles.cardTitle}>Pedidos (Admin)</Text>
-                </TouchableOpacity>
-            )}
+
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('HistoricoPedidos')}>
+                <Image source={require('../../assets/history-icon.png')} style={styles.cardIcon} />
+                <Text style={styles.cardTitle}>Histórico</Text>
+            </TouchableOpacity>
         </View>
-    </View>
-);
+    );
+};
+
+export default HomeMenu;
+
 
 const Home: React.FC = () => {
     const [user, setUser] = useState<{ email: string; isAdmin: boolean } | null>(null);

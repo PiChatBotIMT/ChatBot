@@ -1,52 +1,65 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-const { width } = Dimensions.get('window'); // Obtém a largura da tela
-const CARD_SIZE = width * 0.2; // Define o tamanho do card como 40% da largura da tela
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    cardContainer: {
-        width: '100%',
-        alignItems: 'center',
-        flexDirection: 'row',
-        flexWrap: 'wrap', // Permite que os cards quebrem linha em telas menores
-        justifyContent: 'space-between',
-    },
-    card: {
-        backgroundColor: '#f9f9f9',
-        borderRadius: 10,
-        width: CARD_SIZE, 
-        height: CARD_SIZE,
-        marginVertical: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    cardDescription: {
-        fontSize: 14,
-        color: '#555',
-        textAlign: 'center',
-    },
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#e6e6e6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  botIcon: {
+    width: 150,
+    height: 150,
+    marginBottom: 10,
+  },
+  welcomeText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  chatButton: {
+    backgroundColor: '#fff',
+    borderColor: '#f9a825',
+    borderWidth: 1.5,
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  chatButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000',
+  },
+  card: {
+    backgroundColor: '#fff',
+    width: '35%',
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 8,
+    marginVertical: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  cardIcon: {
+    width: 26,
+    height: 26,
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#000',
+  },
 });
-
-export default styles;
