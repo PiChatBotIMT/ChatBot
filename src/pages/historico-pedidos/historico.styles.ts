@@ -3,36 +3,49 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
-        padding: 16,
+        backgroundColor: '#fff',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        textAlign: 'center',
+    topBar: {
+        backgroundColor: '#FEC240',
+        paddingVertical: 20,
+        paddingHorizontal: 12,
+    },
+    bottomBar: {
+        backgroundColor: '#FEC240',
+        height: 60,
+    },
+    breadcrumb: {
+        fontSize: 12,
+    },
+    content: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 20,
     },
     list: {
-        paddingBottom: 16,
+        paddingBottom: 80,
     },
     card: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f9f9f9',
+        borderRadius: 10,
         padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
+        marginBottom: 20,
         shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowOffset: {width: 0, height: 5},
+        shadowOpacity: 0.01,
+        shadowRadius: 5,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: '#BBB',
     },
     data: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 5,
     },
     itens: {
         fontSize: 14,
-        marginBottom: 8,
+        marginBottom: 5,
     },
     total: {
         fontSize: 16,
@@ -40,4 +53,5 @@ const styles = StyleSheet.create({
         color: '#4CAF50',
     },
 });
-export default styles;  
+
+export default styles;

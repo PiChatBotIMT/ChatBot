@@ -15,27 +15,38 @@ const pedidos: Pedido[] = [
 ];
 
 const HistoricoPedidos: React.FC = () => {
-    const renderPedido = ({ item }: { item: Pedido }) => (
-        <View style={styles.card}>
-            <Text style={styles.data}>Data: {item.data}</Text>
-            <Text style={styles.itens}>Itens: {item.itens.join(', ')}</Text>
-            <Text style={styles.total}>Total: {item.total}</Text>
-        </View>
-    );
+  const renderPedido = ({ item }: { item: Pedido }) => (
+    <View style={styles.card}>
+      <Text style={styles.data}>Dia {item.data}</Text>
+      <Text style={styles.itens}>itens pedidos :</Text>
+      <View>
+        {item.itens.map((i, idx) => (
+          <Text key={idx} style={styles.itens}>• {i}</Text>
+        ))}
+      </View>
+      <Text style={styles.total}>{item.total}</Text>
+    </View>
+  );
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Histórico de Pedidos</Text>
-            <FlatList
-                data={pedidos}
-                keyExtractor={(item) => item.id}
-                renderItem={renderPedido}
-                contentContainerStyle={styles.list}
-            />
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      <View style={styles.topBar}>
+        <Text style={styles.breadcrumb}>home / histórico de pedidos</Text>
+      </View>
+
+      <View style={styles.content}>
+        <FlatList
+          data={pedidos}
+          keyExtractor={(item) => item.id}
+          renderItem={renderPedido}
+          contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={true}
+        />
+      </View>
+
+      <View style={styles.bottomBar} />
+    </View>
+  );
 };
-
-
 
 export default HistoricoPedidos;
