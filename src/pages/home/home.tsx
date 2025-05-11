@@ -9,6 +9,7 @@ import Cardapio from '../cardapio/cardapio';
 import HistoricoPedidos from '../historico-pedidos/historico';
 import Login from '../login/login';
 import Pedidos from '../visu-pedidos/pedidos';
+import Footer from '../../components/footer/footer';
 
 const Stack = createStackNavigator();
 
@@ -56,7 +57,8 @@ const Home: React.FC = () => {
     const handleLogout = () => setUser(null);
 
     return (
-        <NavigationContainer>
+    <NavigationContainer>
+        <View style={{ flex: 1 }}> {/* Adicionado para organizar o layout */}
             <Stack.Navigator id={undefined}
                 initialRouteName="HomeMenu"
                 screenOptions={({ navigation }) => ({
@@ -121,8 +123,11 @@ const Home: React.FC = () => {
                     options={{ title: 'Pedidos (Admin)' }}
                 />
             </Stack.Navigator>
-        </NavigationContainer>
-    );
-};
+            <Footer /> {/* Footer movido para dentro do View */}
+            
+        </View>
+    </NavigationContainer>
+);
+}
 
 export default Home;

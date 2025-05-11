@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import styles from './cardapio.styles'; // Importando o arquivo de estilos
+import Footer from '../../components/footer/footer';
 const Cardapio: React.FC = () => {
     const items = [
         { id: 1, name: 'Pizza Margherita', price: 25.0 },
@@ -23,6 +24,9 @@ const Cardapio: React.FC = () => {
                     </View>
                 )}
             />
+            <View>
+                <Footer />
+            </View>
         </View>
     );
 };
