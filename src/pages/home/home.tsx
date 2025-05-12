@@ -10,6 +10,8 @@ import HistoricoPedidos from '../historico-pedidos/historico';
 import Login from '../login/login';
 import Pedidos from '../visu-pedidos/pedidos';
 import Footer from '../../components/footer/footer';
+import { FontAwesome } from '@expo/vector-icons';
+
 
 const Stack = createStackNavigator();
 
@@ -80,6 +82,11 @@ const Home: React.FC = () => {
                                 <Text style={{ color: '#007BFF', fontSize: 16 }}>
                                     Login
                                 </Text>
+                                <view>
+                                    <FontAwesome name="user-circle" size={30} />
+                                </view>
+                               
+                          
                             </TouchableOpacity>
                         )
                     ),
