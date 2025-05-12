@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, TouchableOpacity } from 'react-native';
@@ -11,6 +11,7 @@ import Login from '../login/login';
 import Pedidos from '../visu-pedidos/pedidos';
 import Footer from '../../components/footer/footer';
 import { FontAwesome } from '@expo/vector-icons';
+import { Image } from 'react-native';
 
 
 const Stack = createStackNavigator();
@@ -79,22 +80,37 @@ const Home: React.FC = () => {
                                 style={{ marginRight: 15 }}
                                 onPress={() => navigation.navigate('Login')}
                             >
-                                <Text style={{ color: '#007BFF', fontSize: 16 }}>
-                                    Login
-                                </Text>
+                                
                                 <view>
                                     <FontAwesome name="user-circle" size={30} />
                                 </view>
+                                <Text style={{ color: '#007BFF', fontSize: 16 }}>
+                                    Login
+                                </Text>
                                
                           
                             </TouchableOpacity>
                         )
                     ),
+                    headerLeft: () => ( // Adiciona o ícone de menu de barras
+                        <TouchableOpacity
+                            style={{ marginLeft: 15 }}
+                            onPress={() => console.log('Menu button pressed')} // Substitua por sua lógica de menu
+                        >
+                            <FontAwesome name="bars" size={24} color="#000" />
+                        </TouchableOpacity>
+                    ),
+                    headerTitle: () => (
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#000' }}>
+                            Menu
+                        </Text>
+                    ),
+                    headerTitleAlign: 'center', // Centraliza o texto no header
                 })}
             >
                 <Stack.Screen
                     name="HomeMenu"
-                    options={{ title: 'Menu Principal' }}
+                    options={{ title: '' }}
                 >
                     {props => <HomeMenu {...props} isAdmin={user?.isAdmin ?? false} />}
                 </Stack.Screen>
