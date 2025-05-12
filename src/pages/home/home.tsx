@@ -13,10 +13,9 @@ import Pedidos from '../visu-pedidos/pedidos';
 const Stack = createStackNavigator();
 
 
-const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation }) => {
-    return (
+const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation, isAdmin }) => {    return (
         <View style={styles.container}>
-            <Image source={require('../../assets/bot-icon.png')} style={styles.botIcon} />
+            {/* <Image source={require('../../assets/bot-icon.png')} style={styles.botIcon} /> */}
             <Text style={styles.welcomeText}>Bem-Vindo ao Restaurante</Text>
 
             <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('Chatbot')}>
@@ -24,19 +23,24 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation 
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Cardapio')}>
-                <Image source={require('../../assets/menu-icon.png')} style={styles.cardIcon} />
+                {/* <Image source={require('../../assets/menu-icon.png')} style={styles.cardIcon} /> */}
                 <Text style={styles.cardTitle}>Cardápio</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('HistoricoPedidos')}>
-                <Image source={require('../../assets/history-icon.png')} style={styles.cardIcon} />
+                {/* <Image source={require('../../assets/history-icon.png')} style={styles.cardIcon} /> */}
                 <Text style={styles.cardTitle}>Histórico</Text>
             </TouchableOpacity>
+            {isAdmin && (
+                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Pedidos')}>
+                    <Text style={styles.cardTitle}>Pedidos (Admin)</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
 
-export default HomeMenu;
+export { HomeMenu };
 
 
 const Home: React.FC = () => {
@@ -89,12 +93,18 @@ const Home: React.FC = () => {
                     ),
                 })}
             >
-                <Stack.Screen
-                    name="HomeMenu"
-                    options={{ title: 'Menu Principal' }}
-                >
-                    {props => <HomeMenu {...props} isAdmin={user?.isAdmin ?? false} />}
-                </Stack.Screen>
+               <Stack.Screen
+    name="HomeMenu"
+    options={{ title: 'Menu Principal' }}
+>
+    {props => (
+        <HomeMenu
+            {...props}
+            isAdmin={user?.isAdmin ?? false}
+            key={user?.isAdmin ? 'admin' : 'user'} // <-- força re-render ao trocar de usuário
+        />
+    )}
+</Stack.Screen>
                 <Stack.Screen
                     name="Chatbot"
                     component={Chatbot}
