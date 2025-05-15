@@ -15,17 +15,24 @@ const Stack = createStackNavigator();
 
 const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({ navigation, isAdmin }) => {    return (
         <View style={styles.container}>
+            <Image source={require('../../image/bot-icon.png')} style={styles.botIcon} />
+
             <Text style={styles.welcomeText}>Bem-Vindo ao Restaurante</Text>
 
             <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate('Chatbot')}>
                 <Text style={styles.chatButtonText}>Como posso ajudar?</Text>
             </TouchableOpacity>
+            
 
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Cardapio')}>
+
+                <Image source={require('../../image/menu-icon.png')} style={styles.cardIcon} />
                 <Text style={styles.cardTitle}>Cardápio</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('HistoricoPedidos')}>
+                <Image source={require('../../image/history-icon.png')} style={styles.cardIcon} />
+
                 <Text style={styles.cardTitle}>Histórico</Text>
             </TouchableOpacity>
             {isAdmin && (
