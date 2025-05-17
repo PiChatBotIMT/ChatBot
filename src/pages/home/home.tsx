@@ -101,9 +101,10 @@ const Home: React.FC = () => {
                         </TouchableOpacity>
                     ),
                     headerTitle: () => (
-                        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#000' }}>
-                            Menu
-                        </Text>
+                         <Image
+                                source={require('../../assets/3.jpg')}
+                                style={{ width: 100, height: 40, resizeMode: 'contain' }}
+                            />
                     ),
                     headerTitleAlign: 'center', // Centraliza o texto no header
                 })}
