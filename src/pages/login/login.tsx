@@ -156,13 +156,20 @@ const Login = ({ navigation, setIsAdmin }: { navigation: any, setIsAdmin: (isAdm
                         />
                     </>
                 )}
-                <Button title={isLogin ? 'Entrar' : 'Cadastrar'} onPress={handleSubmit} />
+                <TouchableOpacity style={styles.buttonOrange} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>{isLogin ? 'Entrar' : 'Cadastrar'}</Text>
+                </TouchableOpacity>
+
             </View>
             <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
                 <Text style={styles.switchText}>
                     {isLogin ? 'Não tem uma conta? Crie uma!' : 'Já tem uma conta? Faça login!'}
                 </Text>
             </TouchableOpacity>
+            
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>© 2025 Minha Aplicação</Text>
+            </View>
         </View>
     );
 };
