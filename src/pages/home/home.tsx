@@ -104,7 +104,7 @@ const Home: React.FC = () => {
                 <Text
                   style={{ marginRight: 10, color: "#007BFF", fontSize: 16 }}
                 >
-                  Bem-vindo{user.isAdmin ? " (Admin)" : ""}, {user.email}
+                  Bem-vindo
                 </Text>
                 <TouchableOpacity onPress={handleLogout}>
                   <Text style={{ color: "red", fontSize: 16 }}>Sair</Text>
