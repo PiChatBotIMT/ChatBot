@@ -131,53 +131,55 @@ const Login = ({
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{isLogin ? "Login" : "Registro"}</Text>
-      <View style={styles.form}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholder="Digite seu email"
-        />
-        <Text style={styles.label}>Senha:</Text>
-        <TextInput
-          style={styles.input}
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-          placeholder="Digite sua senha"
-        />
-        {!isLogin && (
-          <>
-            <Text style={styles.label}>Confirmar Senha:</Text>
-            <TextInput
-              style={styles.input}
-              value={confirmarSenha}
-              onChangeText={setConfirmarSenha}
-              secureTextEntry
-              placeholder="Confirme sua senha"
-            />
-          </>
-        )}
-        <Button
-          title={isLogin ? "Entrar" : "Cadastrar"}
-          onPress={handleSubmit}
-        />
-      </View>
-      <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-        <Text style={styles.switchText}>
-          {isLogin
-            ? "Não tem uma conta? Crie uma!"
-            : "Já tem uma conta? Faça login!"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>{isLogin ? 'Login' : 'Registro'}</Text>
+            <View style={styles.form}>
+                <Text style={styles.label}>Email:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholder="Digite seu email"
+                />
+                <Text style={styles.label}>Senha:</Text>
+                <TextInput
+                    style={styles.input}
+                    value={senha}
+                    onChangeText={setSenha}
+                    secureTextEntry
+                    placeholder="Digite sua senha"
+                />
+                {!isLogin && (
+                    <>
+                        <Text style={styles.label}>Confirmar Senha:</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={confirmarSenha}
+                            onChangeText={setConfirmarSenha}
+                            secureTextEntry
+                            placeholder="Confirme sua senha"
+                        />
+                    </>
+                )}
+                <TouchableOpacity style={styles.buttonOrange} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>{isLogin ? 'Entrar' : 'Cadastrar'}</Text>
+                </TouchableOpacity>
+
+            </View>
+            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+                <Text style={styles.switchText}>
+                    {isLogin ? 'Não tem uma conta? Crie uma!' : 'Já tem uma conta? Faça login!'}
+                </Text>
+            </TouchableOpacity>
+            
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>© 2025 Minha Aplicação</Text>
+            </View>
+        </View>
+    );
 
 export default Login;
