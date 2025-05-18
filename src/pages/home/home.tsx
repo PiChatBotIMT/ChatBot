@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,6 +8,7 @@ import Cardapio from "../cardapio/cardapio";
 import HistoricoPedidos from "../historico-pedidos/historico";
 import Login from "../login/login";
 import Pedidos from "../visu-pedidos/pedidos";
+import SocialMediaFooter from "../../components/footer/footer";
 
 const Stack = createStackNavigator();
 
@@ -73,14 +73,12 @@ const Home: React.FC = () => {
     null
   );
 
-  // Carrega usuário salvo ao abrir o app
   useEffect(() => {
     AsyncStorage.getItem("user").then((data) => {
       if (data) setUser(JSON.parse(data));
     });
   }, []);
 
-  // Salva usuário no AsyncStorage sempre que mudar
   useEffect(() => {
     if (user) {
       AsyncStorage.setItem("user", JSON.stringify(user));
@@ -89,11 +87,10 @@ const Home: React.FC = () => {
     }
   }, [user]);
 
-  // Função para logout
   const handleLogout = () => setUser(null);
 
   return (
-    <NavigationContainer>
+    <View style={{ flex: 1 }}>
       <Stack.Navigator
         id={undefined}
         initialRouteName="HomeMenu"
@@ -125,7 +122,7 @@ const Home: React.FC = () => {
             <HomeMenu
               {...props}
               isAdmin={user?.isAdmin ?? false}
-              key={user?.isAdmin ? "admin" : "user"} // <-- força re-render ao trocar de usuário
+              key={user?.isAdmin ? "admin" : "user"}
             />
           )}
         </Stack.Screen>
@@ -158,7 +155,8 @@ const Home: React.FC = () => {
           options={{ title: "Pedidos (Admin)" }}
         />
       </Stack.Navigator>
-    </NavigationContainer>
+      <SocialMediaFooter />
+    </View>
   );
 };
 
