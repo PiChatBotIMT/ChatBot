@@ -146,10 +146,26 @@ app.get("/cardapio", async (req, res) => {
     const itens = await CardapioItem.find();
     res.status(200).json(itens);
   } catch (err) {
+    console.error("Erro ao buscar o cardápio:", err);
     res.status(500).json({ error: "Erro ao buscar o cardápio" });
   }
 });
 
+app.post("/cardapio", upload.single("image"), async (req, res) => {
+  try {
+    const { name, description, price } = req.body;
+    if (!name || !price) {
+      return res.status(400).json({ error: "Nome e preço são obrigatórios" });
+    }
+    const image = req.file ? `/uploads/${req.file.filename}` : "";
+    const novoItem = new CardapioItem({ name, description, price, image });
+    const salvo = await novoItem.save();
+    res.status(201).json(salvo);
+  } catch (err) {
+    console.error("Erro ao adicionar item:", err);
+    res.status(500).json({ error: "Erro ao adicionar item" });
+  }
+});
 // app.post("/cardapio", async (req, res) => {
 //   try {
 //     const novoItem = new CardapioItem(req.body);
@@ -163,50 +179,44 @@ app.get("/cardapio", async (req, res) => {
 // Editar item
 app.put("/cardapio/:id", upload.single("image"), async (req, res) => {
   try {
-    const updateData = {
-      name: req.body.name,
-      description: req.body.description,
-      price: req.body.price,
-    };
-
-    // Só atualiza a imagem se uma nova foi enviada
+    const { name, description, price } = req.body;
+    if (!name || !price) {
+      return res.status(400).json({ error: "Nome e preço são obrigatórios" });
+    }
+    const updateData = { name, description, price };
     if (req.file) {
       updateData.image = `/uploads/${req.file.filename}`;
     }
-
     const atualizado = await CardapioItem.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true }
     );
+    if (!atualizado) {
+      return res.status(404).json({ error: "Item não encontrado" });
+    }
     res.status(200).json(atualizado);
   } catch (err) {
+    console.error("Erro ao editar item:", err);
     res.status(500).json({ error: "Erro ao editar item" });
   }
 });
 
-// Remover item
+// Remover item do cardápio
 app.delete("/cardapio/:id", async (req, res) => {
   try {
-    await CardapioItem.findByIdAndDelete(req.params.id);
-    res.status(204).send();
+    const removido = await CardapioItem.findByIdAndDelete(req.params.id);
+    if (!removido) {
+      return res.status(404).json({ error: "Item não encontrado" });
+    }
+    res.status(200).json({ message: "Item removido com sucesso" });
   } catch (err) {
-    res.status(500).json({ error: "Erro ao remover item" });
+    console.error("Erro ao remover item:", err);
+    res.status(500).json({ error: "Erroea ao remover item" });
   }
 });
 
 // Rota para criar item com imagem
-app.post("/cardapio", upload.single("image"), async (req, res) => {
-  try {
-    const { name, description, price } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : "";
-    const novoItem = new CardapioItem({ name, description, price, image });
-    const salvo = await novoItem.save();
-    res.status(201).json(salvo);
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao adicionar item" });
-  }
-});
 
 // Iniciar o servidor
 app.listen(PORT, () => {
