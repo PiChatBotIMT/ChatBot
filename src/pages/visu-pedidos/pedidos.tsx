@@ -16,20 +16,25 @@ const API_URL = __DEV__
 const PedidoCard = ({ pedido }: { pedido: any }) => (
   <View style={styles.card}>
     <Text style={styles.cardTitle}>Pedido #{pedido._id.slice(-5)}</Text>
-    <Text style={styles.cardSubtitle}>
-      Data: {new Date(pedido.data).toLocaleString()}
-    </Text>
-    <Text style={styles.cardSubtitle}>
-      Método de Pagamento: {pedido.metodoPagamento}
-    </Text>
-    <Text style={styles.cardSubtitle}>
-      Total: R$ {pedido.total?.toFixed(2) ?? "--"}
-    </Text>
-    <Text style={styles.cardSubtitle}>Itens:</Text>
+
+<View style={styles.cardLine}>
+  <Text style={styles.cardLabel}>Data:</Text>
+  <Text style={styles.cardValue}>{new Date(pedido.data).toLocaleString()}</Text>
+</View>
+<View style={styles.cardLine}>
+  <Text style={styles.cardLabel}>Método de Pagamento:</Text>
+  <Text style={styles.cardValue}>{pedido.metodoPagamento}</Text>
+</View>
+<View style={styles.cardLine}>
+  <Text style={styles.cardLabel}>Total:</Text>
+  <Text style={styles.cardValue}>R$ {pedido.total?.toFixed(2) ?? '--'}</Text>
+</View>
+    <View style={styles.cardLine}>
+  <Text style={styles.cardLabel}>Itens:</Text>
+</View>
     {pedido.itens?.map((item: any, idx: number) => (
       <Text key={idx} style={styles.cardItem}>
-        - {item.nome} ({item.quantidade}){" "}
-        {item.descricao ? `- ${item.descricao}` : ""}
+        {item.nome} ({item.quantidade}) {item.descricao ? `| ${item.descricao}` : ''}
       </Text>
     ))}
   </View>
