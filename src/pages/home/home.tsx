@@ -81,14 +81,19 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
 
         <Text style={styles.cardTitle}>Histórico</Text>
       </TouchableOpacity>
-      {isAdmin && (
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => navigation.navigate("Pedidos")}
-        >
-          <Text style={styles.cardTitle}>Pedidos (Admin)</Text>
-        </TouchableOpacity>
-      )}
+     {isAdmin && (
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() => navigation.navigate("Pedidos")}
+  >
+    <Image
+      source={require("../../image/admin-icon.png")}
+      style={styles.cardIcon}
+    />
+    <Text style={styles.cardTitle}>Pedidos</Text>
+  </TouchableOpacity>
+)}
+
     </View>
   );
 };
