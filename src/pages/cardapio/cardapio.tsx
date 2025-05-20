@@ -8,10 +8,12 @@ import {
   Alert,
   TextInput,
   Modal,
+  Platform,
 } from "react-native";
 import styles from "./cardapio.styles";
 import axios from "axios";
 import { launchImageLibrary } from "react-native-image-picker";
+import { API_URL } from "../../config/api";
 
 type CardapioItem = {
   _id?: string;
@@ -27,6 +29,19 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
 
+  const showAlert = (
+    title: string,
+    message: string,
+    onConfirm?: () => void
+  ) => {
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n${message}`);
+      if (onConfirm) onConfirm();
+    } else {
+      Alert.alert(title, message, [{ text: "OK", onPress: onConfirm }]);
+    }
+  };
+
   const pickImage = async () => {
     launchImageLibrary({ mediaType: "photo" }, (response) => {
       if (response.assets && response.assets.length > 0) {
@@ -37,28 +52,43 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
 
   useEffect(() => {
     axios
-      .get<CardapioItem[]>("http://localhost:5000/cardapio")
+      .get<CardapioItem[]>(`${API_URL}/cardapio`)
       .then((res) => setItems(res.data))
-      .catch(() => Alert.alert("Erro", "Não foi possível carregar o cardápio"));
+      .catch(() => showAlert("Erro", "Não foi possível carregar o cardápio"));
   }, []);
-
   const removerItem = (id: string) => {
-    Alert.alert("Remover", "Deseja remover este item?", [
-      { text: "Cancelar" },
-      {
-        text: "Remover",
-        onPress: () => {
-          axios
-            .delete(`http://localhost:5000/cardapio/${id}`)
-            .then(() => setItems(items.filter((i) => i._id !== id)))
-            .catch(() =>
-              Alert.alert("Erro", "Não foi possível remover o item")
-            );
+    if (Platform.OS === "web") {
+      // No web, não tem confirmação customizada, só um alert simples
+      if (window.confirm("Deseja remover este item?")) {
+        axios
+          .delete(`${API_URL}/cardapio/${id}`)
+          .then(() => setItems(items.filter((i) => i._id !== id)))
+          .catch((err) => {
+            console.log("Erro ao remover:", err.response?.data || err.message);
+            window.alert("Erro ao remover o item");
+          });
+      }
+    } else {
+      Alert.alert("Remover", "Deseja remover este item?", [
+        { text: "Cancelar" },
+        {
+          text: "Remover",
+          onPress: () => {
+            axios
+              .delete(`${API_URL}/cardapio/${id}`)
+              .then(() => setItems(items.filter((i) => i._id !== id)))
+              .catch((err) => {
+                console.log(
+                  "Erro ao remover:",
+                  err.response?.data || err.message
+                );
+                Alert.alert("Erro", "Não foi possível remover o item");
+              });
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
-
   // Função para abrir o modal de edição
   const abrirEdicao = (item: CardapioItem) => {
     setEditItem({ ...item });
@@ -83,17 +113,14 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
             name: selectedImage.fileName || "image.jpg",
           } as any);
           const res = await axios.put<CardapioItem>(
-            `http://localhost:5000/cardapio/${editItem._id}`,
+            `${API_URL}/cardapio/${editItem._id}`,
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
           setItems(items.map((i) => (i._id === editItem._id ? res.data : i)));
         } else {
           // Não selecionou nova imagem, envie JSON normal
-          await axios.put(
-            `http://localhost:5000/cardapio/${editItem._id}`,
-            editItem
-          );
+          await axios.put(`${API_URL}/cardapio/${editItem._id}`, editItem);
           setItems(items.map((i) => (i._id === editItem._id ? editItem : i)));
         }
       } else {
@@ -110,7 +137,7 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
           } as any);
         }
         const res = await axios.post<CardapioItem>(
-          "http://localhost:5000/cardapio",
+          `${API_URL}/cardapio`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -150,24 +177,30 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
         data={items}
         keyExtractor={(item) => item._id}
         numColumns={2}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemDesc}>{item.description}</Text>
-            <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
-            {isAdmin && (
-              <View style={styles.adminActions}>
-                <TouchableOpacity onPress={() => abrirEdicao(item)}>
-                  <Text style={styles.editBtn}>Editar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => removerItem(item._id)}>
-                  <Text style={styles.removeBtn}>Remover</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        )}
+        renderItem={({ item }) => {
+          console.log("Renderizando item:", item);
+          return (
+            <View style={styles.card}>
+              <Image
+                source={{ uri: `${API_URL}${item.image}` }}
+                style={styles.image}
+              />
+              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemDesc}>{item.description}</Text>
+              <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
+              {isAdmin && (
+                <View style={styles.adminActions}>
+                  <TouchableOpacity onPress={() => abrirEdicao(item)}>
+                    <Text style={styles.editBtn}>Editar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => removerItem(item._id)}>
+                    <Text style={styles.removeBtn}>Remover</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          );
+        }}
       />
 
       {/* Modal de edição */}
