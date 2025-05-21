@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#fff',
+        backgroundColor: '#e6e6e6',
     },
     title: {
         fontSize: 24,
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         borderRadius: 12,
-        margin: 8,
+        margin: 5,
         padding: 12,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -86,6 +86,35 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 15,
 },
+// Novos estilos a serem adicionados
+inputContainer: {
+  marginBottom: 12,
+},
+inputLabel: {
+  marginBottom: 4,
+  fontSize: 14,
+  fontWeight: "500",
+},
+requiredField: {
+  color: "#D32F2F",
+  fontWeight: "bold",
+},
+inputRequired: {
+  borderColor: "#ffcccc",
+  backgroundColor: "#fff8f8",
+},
+imagePickerButton: {
+  backgroundColor: "#f5f5f5",
+  padding: 12,
+  borderRadius: 5,
+  borderWidth: 1,
+  borderColor: "#ddd",
+  marginBottom: 15,
+},
+imagePickerText: {
+  textAlign: "center",
+  color: "#555",
+}
 });
 
 export default styles;

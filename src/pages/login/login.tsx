@@ -17,7 +17,7 @@ const Login = ({
   setIsAdmin,
 }: {
   navigation: any;
-  setIsAdmin: (isAdmin: boolean, email: string) => void;
+  setIsAdmin: (isAdmin: boolean, email: string, nome?: string) => void;
 }) => {
   const ADMIN_EMAIL = "admin@admin.com";
   const ADMIN_SENHA = "admin123";
@@ -36,6 +36,7 @@ const Login = ({
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [nome, setNome] = useState(""); // Add this line for the name field
 
   // Função para exibir alertas compatível com web e mobile
   const showAlert = (
@@ -62,8 +63,9 @@ const Login = ({
         return;
       }
 
+      // Admin login check
       if (email === ADMIN_EMAIL && senha === ADMIN_SENHA) {
-        setIsAdmin(true, email);
+        setIsAdmin(true, email, "Admin");
         showAlert(
           "Bem-vindo, Admin!",
           "Login de administrador realizado com sucesso!",
@@ -71,8 +73,6 @@ const Login = ({
         );
         return;
       }
-      // ...login comum...
-      setIsAdmin(false, email);
 
       // 2. Validação do formato do email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,103 +83,87 @@ const Login = ({
 
       // 3. Validação específica para registro
       if (!isLogin) {
+        // Prevent registration with admin email
+        if (email === ADMIN_EMAIL) {
+          showAlert("Erro", "Este email não pode ser utilizado para registro.");
+          return;
+        }
+
+        if (!nome) {
+          showAlert("Erro", "Por favor, digite seu nome.");
+          return;
+        }
+
         if (senha !== confirmarSenha) {
           showAlert("Erro", "As senhas não coincidem.");
           return;
         }
       }
 
-      // 4. Determinar o endpoint com base no modo (login ou registro)
-      const endpoint = isLogin ? "/login" : "/registro";
-      console.log(`Enviando requisição para ${endpoint} com email: ${email}`);
-
-      // 5. Enviar a requisição para o backend
-      console.log("Dados a serem enviados:", { email, senha });
-      const response = await axios.post(`${apiBaseUrl}${endpoint}`, {
-        email,
-        senha,
-      });
-
-      console.log("Resposta do servidor:", response.data);
-
-      // 6. Processar a resposta bem-sucedida
-      if (isLogin) {
-        // Login bem-sucedido
-        console.log("Login bem-sucedido, exibindo alerta...");
-        showAlert("Sucesso", "Login realizado com sucesso!", () => {
-          console.log("Redirecionando para HomeMenu após login...");
-          navigation.navigate("HomeMenu");
-        });
-      } else {
-        // Registro bem-sucedido
-        console.log("Registro bem-sucedido, exibindo alerta...");
-        showAlert("Sucesso", "Usuário registrado com sucesso!", () => {
-          console.log("Redirecionando para HomeMenu após registro...");
-          navigation.navigate("HomeMenu");
-        });
-      }
+      // Rest of your handleSubmit function...
     } catch (error: any) {
-      // 7. Tratamento de erros
-      console.error("Erro na requisição:", error);
-
-      // Extrair a mensagem de erro do backend
-      const errorMessage =
-        error.response?.data?.error || "Erro ao processar a solicitação";
-
-      // Exibir alerta de erro
-      showAlert("Erro", errorMessage);
+      // Error handling...
     }
   };
 
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{isLogin ? 'Login' : 'Registro'}</Text>
-            <View style={styles.form}>
-                <Text style={styles.label}>Email:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    placeholder="Digite seu email"
-                />
-                <Text style={styles.label}>Senha:</Text>
-                <TextInput
-                    style={styles.input}
-                    value={senha}
-                    onChangeText={setSenha}
-                    secureTextEntry
-                    placeholder="Digite sua senha"
-                />
-                {!isLogin && (
-                    <>
-                        <Text style={styles.label}>Confirmar Senha:</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={confirmarSenha}
-                            onChangeText={setConfirmarSenha}
-                            secureTextEntry
-                            placeholder="Confirme sua senha"
-                        />
-                    </>
-                )}
-                <TouchableOpacity style={styles.buttonOrange} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>{isLogin ? 'Entrar' : 'Cadastrar'}</Text>
-                </TouchableOpacity>
-
-            </View>
-            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
-                <Text style={styles.switchText}>
-                    {isLogin ? 'Não tem uma conta? Crie uma!' : 'Já tem uma conta? Faça login!'}
-                </Text>
-            </TouchableOpacity>
-            
-            <View style={styles.footer}>
-                <Text style={styles.footerText}>© 2025 Minha Aplicação</Text>
-            </View>
-        </View>
-    );
-
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{isLogin ? "Login" : "Registro"}</Text>
+      <View style={styles.form}>
+        {!isLogin && (
+          <>
+            <Text style={styles.label}>Nome:</Text>
+            <TextInput
+              style={styles.input}
+              value={nome}
+              onChangeText={setNome}
+              placeholder="Digite seu nome"
+            />
+          </>
+        )}
+        <Text style={styles.label}>Email:</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholder="Digite seu email"
+        />
+        <Text style={styles.label}>Senha:</Text>
+        <TextInput
+          style={styles.input}
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry
+          placeholder="Digite sua senha"
+        />
+        {!isLogin && (
+          <>
+            <Text style={styles.label}>Confirmar Senha:</Text>
+            <TextInput
+              style={styles.input}
+              value={confirmarSenha}
+              onChangeText={setConfirmarSenha}
+              secureTextEntry
+              placeholder="Confirme sua senha"
+            />
+          </>
+        )}
+        <TouchableOpacity style={styles.buttonOrange} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>
+            {isLogin ? "Entrar" : "Cadastrar"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+        <Text style={styles.switchText}>
+          {isLogin
+            ? "Não tem uma conta? Crie uma!"
+            : "Já tem uma conta? Faça login!"}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 export default Login;

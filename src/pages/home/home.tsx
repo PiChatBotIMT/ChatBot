@@ -28,7 +28,7 @@ const Breadcrumb = ({ navigation, route }) => {
         alignItems: "center",
         paddingHorizontal: 15,
         paddingVertical: 8,
-        backgroundColor: "#f8f8f8",
+        backgroundColor: "#ffffff",
       }}
     >
       <TouchableOpacity onPress={() => navigation.navigate("HomeMenu")}>
@@ -81,19 +81,18 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
 
         <Text style={styles.cardTitle}>Histórico</Text>
       </TouchableOpacity>
-     {isAdmin && (
-  <TouchableOpacity
-    style={styles.card}
-    onPress={() => navigation.navigate("Pedidos")}
-  >
-    <Image
-      source={require("../../image/admin-icon.png")}
-      style={styles.cardIcon}
-    />
-    <Text style={styles.cardTitle}>Pedidos</Text>
-  </TouchableOpacity>
-)}
-
+      {isAdmin && (
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate("Pedidos")}
+        >
+          <Image
+            source={require("../../image/history-icon.png")}
+            style={styles.cardIcon}
+          />
+          <Text style={styles.cardTitle}>Pedidos</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

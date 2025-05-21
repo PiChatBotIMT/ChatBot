@@ -29,6 +29,8 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
 
+  const numColumns = Platform.OS === "web" ? 5 : 2;
+
   const showAlert = (
     title: string,
     message: string,
@@ -42,19 +44,73 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
     }
   };
 
+  const formatarPreco = (value: number) => {
+    if (!value && value !== 0) return "";
+
+    const valueStr = value.toFixed(2).replace(".", ",");
+
+    return valueStr;
+  };
+
   const pickImage = async () => {
+    console.log("Picking image...");
     launchImageLibrary({ mediaType: "photo" }, (response) => {
+      console.log("Image picker response:", response);
       if (response.assets && response.assets.length > 0) {
+        console.log("Selected image details:", {
+          uri: response.assets[0].uri,
+          type: response.assets[0].type,
+          fileName: response.assets[0].fileName,
+          fileSize: response.assets[0].fileSize,
+        });
         setSelectedImage(response.assets[0]);
+      } else if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorCode) {
+        console.error(
+          "ImagePicker Error:",
+          response.errorCode,
+          response.errorMessage
+        );
       }
     });
   };
-
   useEffect(() => {
+    console.log(`Tentando carregar cardápio de: ${API_URL}/cardapio`);
+
     axios
       .get<CardapioItem[]>(`${API_URL}/cardapio`)
-      .then((res) => setItems(res.data))
-      .catch(() => showAlert("Erro", "Não foi possível carregar o cardápio"));
+      .then((res) => {
+        console.log("Dados do cardápio recebidos:", res.data.length, "itens");
+        setItems(res.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar cardápio:", error);
+
+        // Mostrar detalhes mais específicos do erro
+        if (error.response) {
+          // O servidor respondeu com um status de erro
+          console.error(
+            "Resposta de erro:",
+            error.response.status,
+            error.response.data
+          );
+        } else if (error.request) {
+          // A requisição foi feita mas não houve resposta
+          console.error(
+            "Sem resposta do servidor. Detalhes:",
+            JSON.stringify(error.request)
+          );
+        } else {
+          // Erro na configuração da requisição
+          console.error("Erro na configuração:", error.message);
+        }
+
+        showAlert(
+          "Erro",
+          `Não foi possível carregar o cardápio: ${error.message}`
+        );
+      });
   }, []);
   const removerItem = (id: string) => {
     if (Platform.OS === "web") {
@@ -99,60 +155,63 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
   const salvarEdicao = async () => {
     if (!editItem) return;
     try {
-      if (editItem._id) {
-        // Edição
-        if (selectedImage) {
-          // Se selecionou nova imagem, envie via FormData
-          const formData = new FormData();
-          formData.append("name", editItem.name);
-          formData.append("description", editItem.description);
-          formData.append("price", String(editItem.price));
-          formData.append("image", {
-            uri: selectedImage.uri,
-            type: selectedImage.type,
-            name: selectedImage.fileName || "image.jpg",
-          } as any);
-          const res = await axios.put<CardapioItem>(
-            `${API_URL}/cardapio/${editItem._id}`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-          );
-          setItems(items.map((i) => (i._id === editItem._id ? res.data : i)));
+      const formData = new FormData();
+      formData.append("name", editItem.name);
+      formData.append("description", editItem.description);
+      formData.append("price", String(editItem.price));
+
+      // Handle image upload
+      if (selectedImage) {
+        if (selectedImage.uri && selectedImage.uri.startsWith("data:image")) {
+          // Se é base64, envia como string
+          formData.append("imageBase64", selectedImage.uri);
+        } else if (Platform.OS === "web") {
+          // Para web, anexa o arquivo diretamente
+          formData.append("image", selectedImage);
         } else {
-          // Não selecionou nova imagem, envie JSON normal
-          await axios.put(`${API_URL}/cardapio/${editItem._id}`, editItem);
-          setItems(items.map((i) => (i._id === editItem._id ? editItem : i)));
-        }
-      } else {
-        // Criação de novo item
-        const formData = new FormData();
-        formData.append("name", editItem.name);
-        formData.append("description", editItem.description);
-        formData.append("price", String(editItem.price));
-        if (selectedImage) {
+          // Para plataformas nativas
           formData.append("image", {
             uri: selectedImage.uri,
-            type: selectedImage.type,
+            type: selectedImage.type || "image/jpeg",
             name: selectedImage.fileName || "image.jpg",
           } as any);
         }
-        const res = await axios.post<CardapioItem>(
-          `${API_URL}/cardapio`,
+      }
+
+      let res;
+      if (editItem._id) {
+        // Editando item existente
+        res = await axios.put<CardapioItem>(
+          `${API_URL}/cardapio/${editItem._id}`,
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
+        setItems(items.map((i) => (i._id === editItem._id ? res.data : i)));
+      } else {
+        // Criando novo item
+        res = await axios.post<CardapioItem>(`${API_URL}/cardapio`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         setItems([...items, res.data]);
       }
+
       setModalVisible(false);
       setEditItem(null);
       setSelectedImage(null);
-    } catch {
-      Alert.alert("Erro", "Não foi possível salvar as alterações");
+    } catch (error) {
+      console.error(
+        "Erro ao salvar item:",
+        error.response?.data || error.message
+      );
+      showAlert("Erro", "Não foi possível salvar as alterações");
     }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cardápio</Text>
@@ -175,19 +234,33 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
       )}
       <FlatList
         data={items}
-        keyExtractor={(item) => item._id}
-        numColumns={2}
+        keyExtractor={(item) => item._id || Math.random().toString()}
+        numColumns={numColumns}
         renderItem={({ item }) => {
-          console.log("Renderizando item:", item);
+          const imageUri = item.image
+            ? `${API_URL}${item.image}`
+            : require("../../image/no-image.png");
+
           return (
             <View style={styles.card}>
               <Image
-                source={{ uri: `${API_URL}${item.image}` }}
+                source={
+                  typeof imageUri === "string" ? { uri: imageUri } : imageUri
+                }
                 style={styles.image}
+                onError={(e) =>
+                  console.log("Erro ao carregar imagem:", e.nativeEvent.error)
+                }
               />
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemDesc}>{item.description}</Text>
-              <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
+              <Text style={styles.itemPrice}>
+                R${" "}
+                {item.price.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </Text>
               {isAdmin && (
                 <View style={styles.adminActions}>
                   <TouchableOpacity onPress={() => abrirEdicao(item)}>
@@ -229,49 +302,99 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
             <Text
               style={{ fontWeight: "bold", fontSize: 18, marginBottom: 10 }}
             >
-              Editar Item
+              {editItem?._id ? "Editar Item" : "Novo Item"}
             </Text>
-            <TextInput
-              style={styles.input}
-              value={editItem?.name}
-              onChangeText={(text) => setEditItem({ ...editItem!, name: text })}
-              placeholder="Nome"
-            />
-            <TextInput
-              style={styles.input}
-              value={editItem?.description}
-              onChangeText={(text) =>
-                setEditItem({ ...editItem!, description: text })
-              }
-              placeholder="Descrição"
-            />
-            <TextInput
-              style={styles.input}
-              value={editItem?.price.toString()}
-              onChangeText={(text) =>
-                setEditItem({ ...editItem!, price: Number(text) })
-              }
-              placeholder="Preço"
-              keyboardType="numeric"
-            />
+
+            {/* Campo Nome com indicador de obrigatório */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>
+                Nome <Text style={styles.requiredField}>*</Text>
+              </Text>
+              <TextInput
+                style={[styles.input, !editItem?.name && styles.inputRequired]}
+                value={editItem?.name}
+                onChangeText={(text) =>
+                  setEditItem({ ...editItem!, name: text })
+                }
+                placeholder="Nome do item"
+              />
+            </View>
+
+            {/* Campo Descrição (opcional) */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Descrição</Text>
+              <TextInput
+                style={styles.input}
+                value={editItem?.description}
+                onChangeText={(text) =>
+                  setEditItem({ ...editItem!, description: text })
+                }
+                placeholder="Descrição do item"
+                multiline={true}
+                numberOfLines={2}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>
+                Preço <Text style={styles.requiredField}>*</Text>
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  editItem?.price === 0 && styles.inputRequired,
+                ]}
+                value={
+                  editItem?.price === 0 ? "" : formatarPreco(editItem?.price)
+                }
+                onChangeText={(text) => {
+                  // Remove tudo exceto números
+                  const numericOnly = text.replace(/[^\d]/g, "");
+
+                  // Converte para formato centavos
+                  const priceInCents = parseInt(numericOnly) || 0;
+
+                  // Converte centavos para reais (dividindo por 100)
+                  const priceInReais = priceInCents / 100;
+
+                  // Atualiza o state
+                  setEditItem({
+                    ...editItem!,
+                    price: priceInReais,
+                  });
+                }}
+                placeholder="0,00"
+                keyboardType={Platform.OS === "web" ? "default" : "numeric"}
+              />
+            </View>
+            {/* Preview de imagem existente */}
             {!selectedImage && editItem?.image && (
               <Image
-                source={{ uri: editItem.image }}
+                source={{ uri: `${API_URL}${editItem.image}` }}
                 style={{ width: 80, height: 80, marginBottom: 10 }}
+                onError={(e) =>
+                  console.log(
+                    "Preview image failed to load:",
+                    e.nativeEvent.error
+                  )
+                }
               />
             )}
+
+            {/* Botão para selecionar imagem */}
             <TouchableOpacity
-              style={styles.input}
+              style={styles.imagePickerButton}
               onPress={() => {
-                // Só permite selecionar se não houver imagem selecionada
                 if (!selectedImage) pickImage();
               }}
               disabled={!!selectedImage}
             >
-              <Text>
+              <Text style={styles.imagePickerText}>
                 {selectedImage ? "Imagem selecionada" : "Selecionar imagem"}
               </Text>
             </TouchableOpacity>
+
+            {/* Preview da imagem selecionada */}
             {selectedImage && (
               <>
                 <Image
@@ -292,6 +415,20 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
                 </TouchableOpacity>
               </>
             )}
+
+            {/* Indicador de campos obrigatórios */}
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#777",
+                marginTop: 10,
+                marginBottom: 5,
+              }}
+            >
+              <Text style={styles.requiredField}>*</Text> Campos obrigatórios
+            </Text>
+
+            {/* Botões de ação */}
             <View
               style={{
                 flexDirection: "row",
@@ -302,7 +439,14 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={{ marginRight: 20, color: "#888" }}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={salvarEdicao}>
+
+              <TouchableOpacity
+                onPress={salvarEdicao}
+                disabled={!editItem?.name || editItem?.price <= 0}
+                style={{
+                  opacity: !editItem?.name || editItem?.price <= 0 ? 0.5 : 1,
+                }}
+              >
                 <Text style={{ color: "#1976D2", fontWeight: "bold" }}>
                   Salvar
                 </Text>
