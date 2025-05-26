@@ -10,10 +10,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 12,
     },
-    bottomBar: {
-        backgroundColor: '#FEC240',
-        height: 60,
-    },
     breadcrumb: {
         fontSize: 12,
     },
@@ -52,6 +48,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#4CAF50',
     },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 4,
+        color: '#000',
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 16,
+    },
+
 });
 
 export default styles;

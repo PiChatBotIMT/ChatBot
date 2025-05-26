@@ -35,16 +35,17 @@ const HistoricoPedidos: React.FC = () => {
       </View>
 
       <View style={styles.content}>
-        <FlatList
-          data={pedidos}
-          keyExtractor={(item) => item.id}
-          renderItem={renderPedido}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={true}
-        />
-      </View>
+      <Text style={styles.title}>histórico de pedidos</Text>
+      <Text style={styles.subtitle}>aqui você pode visualizar o histórico dos pedidos</Text>
 
-      <View style={styles.bottomBar} />
+      <FlatList
+        data={pedidos}
+        keyExtractor={(item) => item.id}
+        renderItem={renderPedido}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={true}
+      />
+    </View>
     </View>
   );
 };
