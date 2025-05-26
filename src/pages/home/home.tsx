@@ -10,6 +10,20 @@ import Login from "../login/login";
 import Pedidos from "../visu-pedidos/pedidos";
 import SocialMediaFooter from "../../components/footer/footer";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  CommonActions,
+  useNavigation,
+  NavigationProp,
+} from "@react-navigation/native";
+
+type RootStackParamList = {
+  HomeMenu: undefined;
+  Chatbot: undefined;
+  Cardapio: undefined;
+  HistoricoPedidos: undefined;
+  Login: undefined;
+  Pedidos: undefined;
+};
 
 const Stack = createStackNavigator();
 
@@ -109,6 +123,7 @@ const ScreenWithBreadcrumb = ({ children, navigation, route }) => {
 };
 
 const Home: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [user, setUser] = useState<{
     email: string;
     isAdmin: boolean;
@@ -128,7 +143,22 @@ const Home: React.FC = () => {
     }
   }, [user]);
 
-  const handleLogout = () => setUser(null);
+  const handleLogout = async () => {
+    try {
+      // Limpar dados do usuário do AsyncStorage
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("@cantina_user_auth");
+
+      // Atualizar o estado do usuário para null
+      setUser(null);
+
+      // Use navigation diretamente
+      navigation.navigate("HomeMenu");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      alert("Erro ao fazer logout. Tente novamente.");
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
