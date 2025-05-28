@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,9 +8,51 @@ import Cardapio from "../cardapio/cardapio";
 import HistoricoPedidos from "../historico-pedidos/historico";
 import Login from "../login/login";
 import Pedidos from "../visu-pedidos/pedidos";
+import SocialMediaFooter from "../../components/footer/footer";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  CommonActions,
+  useNavigation,
+  NavigationProp,
+} from "@react-navigation/native";
+
+type RootStackParamList = {
+  HomeMenu: undefined;
+  Chatbot: undefined;
+  Cardapio: undefined;
+  HistoricoPedidos: undefined;
+  Login: undefined;
+  Pedidos: undefined;
+};
 
 const Stack = createStackNavigator();
 
+const Breadcrumb = ({ navigation, route }) => {
+  const routes = navigation.getState().routes;
+  const currentRouteIndex = routes.findIndex((r) => r.name === route.name);
+
+  if (currentRouteIndex <= 0) {
+    return null; // Don't render anything on the home page
+  }
+
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        backgroundColor: "#ffffff",
+      }}
+    >
+      <TouchableOpacity onPress={() => navigation.navigate("HomeMenu")}>
+        <Text style={{ color: "#007BFF", fontSize: 14 }}>Home</Text>
+      </TouchableOpacity>
+      <Text style={{ marginHorizontal: 5, color: "#666" }}> {"/"} </Text>
+      <Text style={{ fontWeight: "bold", fontSize: 14 }}>{route.name}</Text>
+    </View>
+  );
+};
 const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
   navigation,
   isAdmin,
@@ -59,7 +100,11 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
           style={styles.card}
           onPress={() => navigation.navigate("Pedidos")}
         >
-          <Text style={styles.cardTitle}>Pedidos (Admin)</Text>
+          <Image
+            source={require("../../image/history-icon.png")}
+            style={styles.cardIcon}
+          />
+          <Text style={styles.cardTitle}>Pedidos</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -68,19 +113,28 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
 
 export { HomeMenu };
 
-const Home: React.FC = () => {
-  const [user, setUser] = useState<{ email: string; isAdmin: boolean } | null>(
-    null
+const ScreenWithBreadcrumb = ({ children, navigation, route }) => {
+  return (
+    <View style={{ flex: 1 }}>
+      <Breadcrumb navigation={navigation} route={route} />
+      {children}
+    </View>
   );
+};
 
-  // Carrega usuário salvo ao abrir o app
+const Home: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [user, setUser] = useState<{
+    email: string;
+    isAdmin: boolean;
+    nome?: string;
+  } | null>(null);
   useEffect(() => {
     AsyncStorage.getItem("user").then((data) => {
       if (data) setUser(JSON.parse(data));
     });
   }, []);
 
-  // Salva usuário no AsyncStorage sempre que mudar
   useEffect(() => {
     if (user) {
       AsyncStorage.setItem("user", JSON.stringify(user));
@@ -89,35 +143,100 @@ const Home: React.FC = () => {
     }
   }, [user]);
 
-  // Função para logout
-  const handleLogout = () => setUser(null);
+  const handleLogout = async () => {
+    try {
+      // Limpar dados do usuário do AsyncStorage
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("@cantina_user_auth");
+
+      // Atualizar o estado do usuário para null
+      setUser(null);
+
+      // Use navigation diretamente
+      navigation.navigate("HomeMenu");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      alert("Erro ao fazer logout. Tente novamente.");
+    }
+  };
 
   return (
-    <NavigationContainer>
+    <View style={{ flex: 1 }}>
       <Stack.Navigator
         id={undefined}
         initialRouteName="HomeMenu"
-        screenOptions={({ navigation }) => ({
+        screenOptions={({ navigation, route }) => ({
+          headerLeft: () => {
+            // Always show the logo on the left
+            return (
+              <View
+                style={{
+                  marginLeft: 15,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={require("../../image/logo-poliedro.png")}
+                  style={{ width: 80, height: 80, resizeMode: "contain" }}
+                />
+                {route.name !== "HomeMenu" && (
+                  <TouchableOpacity
+                    style={{ marginLeft: 10 }}
+                    onPress={() => navigation.goBack()}
+                  ></TouchableOpacity>
+                )}
+              </View>
+            );
+          },
+          headerTitle: () => null,
+
           headerRight: () =>
             user ? (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 15,
+                }}
+              >
                 <Text
                   style={{ marginRight: 10, color: "#007BFF", fontSize: 16 }}
                 >
-                  Bem-vindo{user.isAdmin ? " (Admin)" : ""}, {user.email}
+                  Bem-vindo, {user.nome || "Usuário"}
                 </Text>
-                <TouchableOpacity onPress={handleLogout}>
+                <Ionicons name="person-circle" size={24} color="#007BFF" />
+                <TouchableOpacity
+                  style={{ marginLeft: 8 }}
+                  onPress={handleLogout}
+                >
                   <Text style={{ color: "red", fontSize: 16 }}>Sair</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity
-                style={{ marginRight: 15 }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 15,
+                }}
                 onPress={() => navigation.navigate("Login")}
               >
-                <Text style={{ color: "#007BFF", fontSize: 16 }}>Login</Text>
+                <Ionicons name="person-outline" size={24} color="#007BFF" />
+                <Text style={{ color: "#007BFF", fontSize: 16, marginLeft: 5 }}>
+                  Login
+                </Text>
               </TouchableOpacity>
             ),
+          headerStyle: {
+            backgroundColor: "#ffffff",
+            elevation: 5,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+          },
+          headerTitleAlign: "center",
         })}
       >
         <Stack.Screen name="HomeMenu" options={{ title: "Menu Principal" }}>
@@ -125,40 +244,60 @@ const Home: React.FC = () => {
             <HomeMenu
               {...props}
               isAdmin={user?.isAdmin ?? false}
-              key={user?.isAdmin ? "admin" : "user"} // <-- força re-render ao trocar de usuário
+              key={user?.isAdmin ? "admin" : "user"}
             />
           )}
         </Stack.Screen>
-        <Stack.Screen
-          name="Chatbot"
-          component={Chatbot}
-          options={{ title: "ChatBot" }}
-        />
-        <Stack.Screen name="Cardapio" options={{ title: "Cardapio" }}>
-          {(props) => <Cardapio {...props} isAdmin={user?.isAdmin ?? false} />}
+        <Stack.Screen name="Chatbot" options={{ title: "ChatBot" }}>
+          {(props) => (
+            <ScreenWithBreadcrumb {...props}>
+              <Chatbot />
+            </ScreenWithBreadcrumb>
+          )}
         </Stack.Screen>
+
+        <Stack.Screen name="Cardapio" options={{ title: "Cardapio" }}>
+          {(props) => (
+            <ScreenWithBreadcrumb {...props}>
+              <Cardapio isAdmin={user?.isAdmin ?? false} />
+            </ScreenWithBreadcrumb>
+          )}
+        </Stack.Screen>
+
         <Stack.Screen
           name="HistoricoPedidos"
-          component={HistoricoPedidos}
           options={{ title: "HistoricoPedidos" }}
-        />
-        <Stack.Screen name="Login" options={{ title: "Login" }}>
+        >
           {(props) => (
-            <Login
-              {...props}
-              setIsAdmin={(isAdmin: boolean, email: string) =>
-                setUser({ isAdmin, email })
-              }
-            />
+            <ScreenWithBreadcrumb {...props}>
+              <HistoricoPedidos />
+            </ScreenWithBreadcrumb>
           )}
         </Stack.Screen>
-        <Stack.Screen
-          name="Pedidos"
-          component={Pedidos}
-          options={{ title: "Pedidos (Admin)" }}
-        />
+
+        <Stack.Screen name="Login" options={{ title: "Login" }}>
+          {(props) => (
+            <ScreenWithBreadcrumb {...props}>
+              <Login
+                {...props}
+                setIsAdmin={(isAdmin: boolean, email: string, nome?: string) =>
+                  setUser({ isAdmin, email, nome })
+                }
+              />
+            </ScreenWithBreadcrumb>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen name="Pedidos" options={{ title: "Pedidos (Admin)" }}>
+          {(props) => (
+            <ScreenWithBreadcrumb {...props}>
+              <Pedidos />
+            </ScreenWithBreadcrumb>
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
-    </NavigationContainer>
+      <SocialMediaFooter />
+    </View>
   );
 };
 
