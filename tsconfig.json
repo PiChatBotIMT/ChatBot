@@ -1,4 +1,11 @@
 {
-  "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "compilerOptions": {
+    "moduleResolution": "node16",
+    "module": "Node16",        
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "esModuleInterop": true
+  },
+  "extends": "expo/tsconfig.base",
+  "include": ["cypress/**/*.ts"]
 }

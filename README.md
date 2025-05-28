@@ -45,17 +45,33 @@
 
 ## 🔧 Funcionalidades:
 
-
 ---
 
 ## Tecnologias utilizadas:
-**Frontend**:
-    - **Web**: React.js para criar uma interface de usuário interativa e responsiva.
-    - **Mobile**: React Native desenvolver aplicativos móveis para iOS e Android.
-    
-**Backend**:
-    - **Linguagem**: Node.js e Expo go
-    - **Banco de Dados**: MongoDB (NoSQL)
+
+**Frontend**: - **Web**: React.js para criar uma interface de usuário interativa e responsiva. - **Mobile**: React Native desenvolver aplicativos móveis para iOS e Android.
+
+**Backend**: - **Linguagem**: Node.js e Expo go - **Banco de Dados**: MongoDB (NoSQL)
 
 ---
 
+## 🧪 Testes BDD
+
+Este projeto utiliza testes BDD para validar as principais funcionalidades do sistema, como login e pedidos via chatbot.
+
+### Funcionalidades testadas
+
+- Login (usuário comum e admin)
+- Realizar pedido via Chatbot
+
+### Estrutura dos testes
+
+- `bdd-tests/features/`: Cenários escritos em Gherkin (`.feature`)
+- `bdd-tests/steps/`: Scripts de teste automatizados (mock/simulado, usando Cypress)
+
+### Como executar os testes (Exemplo usando Cypress)
+
+1. Instale as dependências do Cypress:
+   ```bash
+   npm install cypress
+   ```
