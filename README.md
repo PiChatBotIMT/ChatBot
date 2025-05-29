@@ -116,5 +116,82 @@
     <li><strong>Linguagem:</strong> Node.js</li>
     <li><strong>Banco de Dados:</strong> MongoDB (NoSQL)</li>
   </ul>
+  <hr>
 
-</div>
+<h2>🚀 Como Executar o Projeto</h2>
+
+<h3>📋 Pré-requisitos</h3>
+<ul>
+  <li>Node.js (v14.0.0 ou superior)</li>
+  <li>NPM ou Yarn</li>
+  <li>MongoDB (local ou Atlas)</li>
+  <li>Expo CLI (para versão mobile)</li>
+</ul>
+
+<h3>⚙️ Configuração do Ambiente</h3>
+
+<h4>1. Clone o repositório</h4>
+
+```bash
+git clone https://github.com/seu-usuario/chatbot-cantina.git
+cd chatbot-cantina
+
+```
+
+# Instalar dependências do backend
+
+cd backend
+npm install
+
+# Instalar dependências do frontend
+
+cd ../src
+npm install
+
+# Configurando o .env
+
+<h4>3. Configure as variáveis de ambiente</h4>
+ <p>Crie um arquivo <code>.env</code>
+  na pasta backend com as seguintes variáveis:</p>
+
+```bash
+PORT=5000
+MONGODB_URI=sua_conexao_mongodb
+JWT_SECRET=seu_secret_jwt
+```
+
+<h3>▶️ Executando a Aplicação</h3> 
+<h4>Backend</h4>
+
+```bash
+cd backend
+node index.js
+```
+
+<h4>Frontend Web</h4>
+
+```bash
+npm run start
+```
+
+## 🧪 Testes BDD
+
+Este projeto utiliza testes BDD para validar as principais funcionalidades do sistema, como login e pedidos via chatbot.
+
+### Funcionalidades testadas
+
+- Login (usuário comum e admin)
+- Realizar pedido via Chatbot
+
+### Estrutura dos testes
+
+- `bdd-tests/features/`: Cenários escritos em Gherkin (`.feature`)
+- `bdd-tests/steps/`: Scripts de teste automatizados (mock/simulado, usando Cypress)
+
+### Como executar os testes (Exemplo usando Cypress)
+
+1. Instale as dependências do Cypress:
+   ```bash
+   npm install cypress
+   ```
+   </div>
