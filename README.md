@@ -133,19 +133,12 @@
 <h4>1. Clone o repositório</h4>
 
 ```bash
-git clone https://github.com/seu-usuario/chatbot-cantina.git
-cd chatbot-cantina
+git clone https://github.com/PiChatBotIMT/ChatBot.git
 
 ```
 
-# Instalar dependências do backend
+# Instalar dependências 
 
-cd backend
-npm install
-
-# Instalar dependências do frontend
-
-cd ../src
 npm install
 
 # Configurando o .env
