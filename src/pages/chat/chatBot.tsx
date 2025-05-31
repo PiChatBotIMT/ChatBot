@@ -18,7 +18,7 @@ type RootStackParamList = {
   HomeMenu: undefined;
   Chatbot: undefined;
   Cardapio: undefined;
-  Histórico: undefined;
+  HistoricoPedidos: undefined;
   Login: undefined;
 };
 
@@ -61,6 +61,7 @@ const Chatbot: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const paymentOptions = ["Dinheiro", "Cartão", "Pix"];
   const flatListRef = useRef<FlatList>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -73,6 +74,7 @@ const Chatbot: React.FC = () => {
   useEffect(() => {
     fetchMenuItems();
     loadChatHistory();
+    checkAuthentication();
   }, []);
 
   // Efeito para salvar o estado do chat sempre que ele mudar
@@ -91,6 +93,21 @@ const Chatbot: React.FC = () => {
       }, 100);
     }
   }, [messages]);
+
+  const checkAuthentication = async () => {
+    try {
+      const userDataString = await AsyncStorage.getItem("@cantina_user_auth");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        setIsAuthenticated(userData && userData.isAuthenticated);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar autenticação:", error);
+      setIsAuthenticated(false);
+    }
+  };
 
   // Função para carregar o histórico de chat
   const loadChatHistory = async () => {
@@ -237,6 +254,11 @@ const Chatbot: React.FC = () => {
   const handleSend = () => {
     if (input.trim() === "") return;
 
+    if (!isAuthenticated) {
+      addBotMessage("Você precisa estar logado para usar o chat.");
+      return;
+    }
+
     const userMessage = {
       id: Date.now().toString(),
       text: input,
@@ -253,11 +275,14 @@ const Chatbot: React.FC = () => {
         showOrderTotal();
         break;
       default:
-        // Adicionar uma mensagem genérica do bot em outros estados
         addBotMessage("Por favor, complete o processo atual usando os botões.");
     }
 
     setInput(""); // Limpa o campo de entrada
+  };
+
+  const navigateToLogin = () => {
+    navigation.navigate("Login");
   };
 
   const processInitialCommand = (command: string) => {
@@ -269,7 +294,7 @@ const Chatbot: React.FC = () => {
         startOrderProcess();
         break;
       case "3":
-        navigation.navigate("Histórico");
+        navigation.navigate("HistoricoPedidos");
         break;
       default:
         addBotMessage("Opção inválida. Por favor, escolha 1, 2 ou 3.");
@@ -396,6 +421,38 @@ const Chatbot: React.FC = () => {
       setIsLoading(true);
       addBotMessage("Enviando seu pedido...");
 
+      // Obter o ID do usuário logado
+      const userDataString = await AsyncStorage.getItem("@cantina_user_auth");
+      if (!userDataString) {
+        addBotMessage(
+          "Você precisa estar logado para fazer um pedido. Redirecionando para login..."
+        );
+
+        setTimeout(() => {
+          navigation.navigate("Login");
+        }, 2000);
+
+        return;
+      }
+
+      const userData = JSON.parse(userDataString);
+      const userId = userData.userId;
+
+      console.log("Dados do usuário:", userData);
+
+      if (!userId) {
+        console.error("ID do usuário não encontrado nos dados de autenticação");
+        addBotMessage(
+          "Erro ao identificar seu usuário. Por favor, faça login novamente."
+        );
+
+        setTimeout(() => {
+          navigation.navigate("Login");
+        }, 2000);
+
+        return;
+      }
+
       const orderData = {
         itens: selectedItems.map((item) => ({
           nome: item.name,
@@ -406,13 +463,28 @@ const Chatbot: React.FC = () => {
         metodoPagamento: paymentMethod,
         total: getTotalOrderValue(),
         descricao: orderDescription,
+        usuarioId: userId, // Adicionando o ID do usuário ao pedido
       };
 
-      const response = await fetch("http://localhost:5000/pedidos", {
+      console.log("Dados do pedido a enviar:", orderData);
+
+      // Definir a URL correta com base na plataforma
+      let apiBaseUrl = "http://localhost:5000";
+      if (__DEV__) {
+        apiBaseUrl =
+          Platform.OS === "web"
+            ? "http://localhost:5000"
+            : "http://10.0.2.2:5000";
+      }
+
+      const response = await fetch(`${apiBaseUrl}/pedidos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       });
+
+      const responseData = await response.json();
+      console.log("Resposta da API:", response.status, responseData);
 
       if (response.ok) {
         addBotMessage(
@@ -435,9 +507,11 @@ const Chatbot: React.FC = () => {
           );
         }, 1000);
       } else {
-        throw new Error("Erro ao enviar o pedido");
+        console.error("Erro na resposta da API:", responseData);
+        throw new Error(responseData.error || "Erro ao enviar o pedido");
       }
     } catch (error) {
+      console.error("Exceção ao enviar pedido:", error);
       addBotMessage(
         "Não foi possível enviar o pedido. Por favor, tente novamente mais tarde."
       );
@@ -688,17 +762,33 @@ const Chatbot: React.FC = () => {
       {renderCurrentOrderStep()}
 
       {orderStep === "idle" && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite sua mensagem..."
-            value={input}
-            onChangeText={setInput}
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-            <Text style={styles.sendButtonText}>Enviar</Text>
-          </TouchableOpacity>
-        </View>
+        <>
+          {isAuthenticated ? (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite sua mensagem..."
+                value={input}
+                onChangeText={setInput}
+              />
+              <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+                <Text style={styles.sendButtonText}>Enviar</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.loginWarningContainer}>
+              <Text style={styles.loginWarningText}>
+                Você precisa estar logado para usar o chat.
+              </Text>
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={navigateToLogin}
+              >
+                <Text style={styles.loginButtonText}>Fazer Login</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
       )}
     </KeyboardAvoidingView>
   );

@@ -45,6 +45,8 @@ const PedidoSchema = new mongoose.Schema({
   metodoPagamento: String,
   total: Number,
   data: { type: Date, default: Date.now },
+  usuarioId: { type: String, required: true },
+  descricao: String,
 });
 
 const Pedido = mongoose.model("Pedido", PedidoSchema);
@@ -79,6 +81,17 @@ const UsuarioSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   senha: { type: String, required: true },
   nome: { type: String },
+});
+
+app.get("/pedidos/usuario/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const pedidos = await Pedido.find({ usuarioId: userId });
+    res.status(200).json(pedidos);
+  } catch (err) {
+    console.error("Erro ao buscar pedidos do usuário:", err);
+    res.status(500).json({ error: "Erro ao buscar os pedidos do usuário" });
+  }
 });
 
 const Usuario = mongoose.model("Usuario", UsuarioSchema);

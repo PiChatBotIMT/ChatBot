@@ -90,7 +90,16 @@ const Login = ({
 
       // Login do administrador
       if (email === ADMIN_EMAIL && senha === ADMIN_SENHA) {
+        const adminData = {
+          _id: "admin123", // ID fixo para o administrador
+          email: ADMIN_EMAIL,
+          nome: "Admin",
+        };
+
         setIsAdmin(true, email, "Admin");
+
+        await handleSuccessfulLogin(adminData);
+
         showAlert(
           "Bem-vindo, Admin!",
           "Login de administrador realizado com sucesso!",

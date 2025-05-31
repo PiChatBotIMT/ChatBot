@@ -339,6 +339,34 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
   },
+
+  loginWarningContainer: {
+    backgroundColor: "#f8d7da",
+    padding: 16,
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  loginWarningText: {
+    color: "#721c24",
+    fontSize: 16,
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  loginButton: {
+    backgroundColor: "#f4511e",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

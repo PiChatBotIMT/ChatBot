@@ -270,7 +270,7 @@ const Home: React.FC = () => {
         >
           {(props) => (
             <ScreenWithBreadcrumb {...props}>
-              <HistoricoPedidos />
+              <HistoricoPedidos navigation={props.navigation} />
             </ScreenWithBreadcrumb>
           )}
         </Stack.Screen>
