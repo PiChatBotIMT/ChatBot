@@ -85,7 +85,7 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.card}
+        style={styles.card} 
         onPress={() => navigation.navigate("HistoricoPedidos")}
       >
         <Image
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
               </TouchableOpacity>
             ),
           headerStyle: {
-            backgroundColor: "#ffffff",
+            backgroundColor: "#FAA41F",
             elevation: 5,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },

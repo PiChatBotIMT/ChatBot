@@ -14,10 +14,13 @@ export default StyleSheet.create({
     marginBottom: 10,
   },
   welcomeText: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 20,
+    fontWeight: '600',
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
+    
+
   },
   chatButton: {
     backgroundColor: '#fff',
@@ -37,6 +40,10 @@ export default StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#000',
+    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
+    letterSpacing: -0.5, // diminui o espaçamento entre as letras
+
+
   },
 card: {
   backgroundColor: '#fff',
@@ -58,10 +65,15 @@ card: {
     width: 26,
     height: 26,
     marginBottom: 8,
+    
   },
   cardTitle: {
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: 'bold',
     color: '#000',
+    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
+    letterSpacing: -0.5, // diminui o espaçamento entre as letras
+
+
   },
 });
