@@ -28,13 +28,13 @@ export default StyleSheet.create({
     borderWidth: 1.5,
     borderRadius: 40,
     paddingVertical: 20,
-    paddingHorizontal: 130,
+  paddingHorizontal: '10%',
     marginBottom: 15,
-  shadowColor: '#FAA41F',      // sombra amarela
-  shadowOffset: { width: 0, height: 0 },
-  shadowOpacity: 0.5,          // mais opaca
-  shadowRadius: 12,             // mais espalhada
-  elevation: 8, 
+    shadowColor: '#FAA41F',      // sombra amarela
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,          // mais opaca
+    shadowRadius: 12,             // mais espalhada
+    elevation: 8, 
   },
   chatButtonText: {
     fontSize: 14,
@@ -52,7 +52,7 @@ card: {
   width: '28%', // exemplo para deixar mais quadrado
   borderRadius: 10,
   paddingVertical: 40,
-  paddingHorizontal: 8,
+  paddingHorizontal: '20%',
   marginVertical: 8,
   alignItems: 'center',
   shadowColor: '#FAA41F',      // sombra amarela

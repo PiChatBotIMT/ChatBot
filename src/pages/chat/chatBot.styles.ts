@@ -32,17 +32,20 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
-    backgroundColor: "#fff",
+    backgroundColor: "#FAA41F",
+    paddingHorizontal: '10%', // ou ajuste conforme necessário
+  
   },
   input: {
     flex: 1,
     height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 20,
+    borderRadius: 15,
     paddingHorizontal: 10,
     marginRight: 10,
     backgroundColor: "#fff",
+
   },
   sendButton: {
     backgroundColor: "#007bff",
