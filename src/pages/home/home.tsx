@@ -178,7 +178,7 @@ const Home: React.FC = () => {
               >
                 <Image
                   source={require("../../image/logo-poliedro.png")}
-                  style={{ width: 80, height: 80, resizeMode: "contain" }}
+                  style={{ width: 100, height: 100, resizeMode: "contain" }}
                 />
                 {route.name !== "HomeMenu" && (
                   <TouchableOpacity
@@ -239,7 +239,7 @@ const Home: React.FC = () => {
           headerTitleAlign: "center",
         })}
       >
-        <Stack.Screen name="HomeMenu" options={{ title: "Menu Principal" }}>
+        <Stack.Screen name="HomeMenu" options={{}}>
           {(props) => (
             <HomeMenu
               {...props}

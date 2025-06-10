@@ -23,35 +23,35 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#f9a825',
     borderWidth: 1.5,
-    borderRadius: 15,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: 40,
+    paddingVertical: 20,
+    paddingHorizontal: 150,
     marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
+  shadowColor: '#FAA41F',      // sombra amarela
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.5,          // mais opaca
+  shadowRadius: 8,             // mais espalhada
+  elevation: 8, 
   },
   chatButtonText: {
     fontSize: 14,
     fontWeight: '500',
     color: '#000',
   },
-  card: {
-    backgroundColor: '#fff',
-    width: '35%',
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 8,
-    marginVertical: 8,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3,
-  },
+card: {
+  backgroundColor: '#fff',
+  width: '28%', // exemplo para deixar mais quadrado
+  borderRadius: 10,
+  paddingVertical: 40,
+  paddingHorizontal: 8,
+  marginVertical: 8,
+  alignItems: 'center',
+  shadowColor: '#FAA41F',      // sombra amarela
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.5,          // mais opaca
+  shadowRadius: 8,             // mais espalhada
+  elevation: 8,                // mais forte no Android
+},
   cardIcon: {
     width: 26,
     height: 26,
