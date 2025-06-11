@@ -24,13 +24,10 @@ const Login = ({
   const ADMIN_SENHA = "admin123";
   const USER_AUTH_KEY = "@cantina_user_auth";
 
-  // Para desenvolvimento, use diferentes URLs conforme o ambiente
-  let apiBaseUrl = API_URL;
-  if (__DEV__) {
-    // Usar localhost para web, 10.0.2.2 para emulador Android, ou IP real para dispositivo físico
-    apiBaseUrl =
-      Platform.OS === "web" ? "http://localhost:5000" : "http://10.0.2.2:5000";
-  }
+  // Usar diretamente a configuração do API_URL do arquivo api.ts que já utiliza o meuIp.ts
+  const apiBaseUrl = API_URL;
+
+  console.log("Usando URL da API:", apiBaseUrl);
 
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -120,6 +117,8 @@ const Login = ({
       if (isLogin) {
         // Processo de login
         try {
+          console.log(`Tentando fazer login em: ${apiBaseUrl}/login`);
+
           const response = await axios.post(`${apiBaseUrl}/login`, {
             email,
             senha,
@@ -168,6 +167,8 @@ const Login = ({
         }
 
         try {
+          console.log(`Tentando registrar em: ${apiBaseUrl}/registro`);
+
           const response = await axios.post(`${apiBaseUrl}/registro`, {
             email,
             senha,

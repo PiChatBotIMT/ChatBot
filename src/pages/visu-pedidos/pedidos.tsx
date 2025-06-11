@@ -1,40 +1,37 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
+import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import axios from "axios";
+import { API_URL } from "../../config/api";
 import styles from "./pedidos.style";
 
-const API_URL = __DEV__
-  ? "http://localhost:5000/pedidos"
-  : "http://SEU_IP:5000/pedidos"; // Troque SEU_IP se for físico
-
+// Componente de cartão de pedido
 const PedidoCard = ({ pedido }: { pedido: any }) => (
   <View style={styles.card}>
     <Text style={styles.cardTitle}>Pedido #{pedido._id.slice(-5)}</Text>
 
-<View style={styles.cardLine}>
-  <Text style={styles.cardLabel}>Data:</Text>
-  <Text style={styles.cardValue}>{new Date(pedido.data).toLocaleString()}</Text>
-</View>
-<View style={styles.cardLine}>
-  <Text style={styles.cardLabel}>Método de Pagamento:</Text>
-  <Text style={styles.cardValue}>{pedido.metodoPagamento}</Text>
-</View>
-<View style={styles.cardLine}>
-  <Text style={styles.cardLabel}>Total:</Text>
-  <Text style={styles.cardValue}>R$ {pedido.total?.toFixed(2) ?? '--'}</Text>
-</View>
     <View style={styles.cardLine}>
-  <Text style={styles.cardLabel}>Itens:</Text>
-</View>
+      <Text style={styles.cardLabel}>Data:</Text>
+      <Text style={styles.cardValue}>
+        {new Date(pedido.data).toLocaleString()}
+      </Text>
+    </View>
+    <View style={styles.cardLine}>
+      <Text style={styles.cardLabel}>Método de Pagamento:</Text>
+      <Text style={styles.cardValue}>{pedido.metodoPagamento}</Text>
+    </View>
+    <View style={styles.cardLine}>
+      <Text style={styles.cardLabel}>Total:</Text>
+      <Text style={styles.cardValue}>
+        R$ {pedido.total?.toFixed(2) ?? "--"}
+      </Text>
+    </View>
+    <View style={styles.cardLine}>
+      <Text style={styles.cardLabel}>Itens:</Text>
+    </View>
     {pedido.itens?.map((item: any, idx: number) => (
       <Text key={idx} style={styles.cardItem}>
-        {item.nome} ({item.quantidade}) {item.descricao ? `| ${item.descricao}` : ''}
+        {item.nome} ({item.quantidade}){" "}
+        {item.descricao ? `| ${item.descricao}` : ""}
       </Text>
     ))}
   </View>
@@ -44,7 +41,12 @@ const Pedidos = () => {
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Usando API_URL da configuração centralizada
+  const PEDIDOS_ENDPOINT = `${API_URL}/pedidos`;
+
   useEffect(() => {
+    console.log(`Buscando pedidos no endpoint: ${PEDIDOS_ENDPOINT}`);
+
     axios
       .get<
         {
@@ -54,14 +56,17 @@ const Pedidos = () => {
           total: number;
           itens: { nome: string; quantidade: number; descricao?: string }[];
         }[]
-      >(API_URL)
-      .then((res) => setPedidos(res.data.reverse()))
-      .catch(() => setPedidos([]))
-      .then(
-        () => {},
-        () => {}
-      )
-      .then(() => setLoading(false));
+      >(PEDIDOS_ENDPOINT)
+      .then((res) => {
+        setPedidos(res.data.reverse());
+        console.log(`${res.data.length} pedidos encontrados`);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar pedidos:", error);
+        setPedidos([]);
+        setLoading(false);
+      });
   }, []);
 
   if (loading)

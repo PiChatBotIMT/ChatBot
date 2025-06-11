@@ -13,6 +13,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import styles from "./chatBot.styles";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_IP } from "../../config/meuIp"; // Importa o IP dinâmico
 
 type RootStackParamList = {
   HomeMenu: undefined;
@@ -210,10 +211,22 @@ const Chatbot: React.FC = () => {
     }
   }, [messages]);
 
+  const getApiBaseUrl = () => {
+    if (Platform.OS === "web") {
+      return "http://localhost:5000";
+    }
+    return `http://${SERVER_IP}:5000`;
+  };
+
   const fetchMenuItems = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:5000/cardapio");
+
+      const apiBaseUrl = getApiBaseUrl();
+      console.log("Tentando buscar cardápio de:", `${apiBaseUrl}/cardapio`);
+
+      const response = await fetch(`${apiBaseUrl}/cardapio`);
+
       if (response.ok) {
         const data = await response.json();
         setMenuItems(data);
@@ -469,13 +482,7 @@ const Chatbot: React.FC = () => {
       console.log("Dados do pedido a enviar:", orderData);
 
       // Definir a URL correta com base na plataforma
-      let apiBaseUrl = "http://localhost:5000";
-      if (__DEV__) {
-        apiBaseUrl =
-          Platform.OS === "web"
-            ? "http://localhost:5000"
-            : "http://10.0.2.2:5000";
-      }
+      const apiBaseUrl = getApiBaseUrl();
 
       const response = await fetch(`${apiBaseUrl}/pedidos`, {
         method: "POST",

@@ -70,17 +70,14 @@ const HistoricoPedidos: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const fetchPedidosUsuario = async (userId: string) => {
     try {
-      let apiBaseUrl = API_URL;
-      // Configuração da URL base para desenvolvimento
-      if (__DEV__) {
-        apiBaseUrl =
-          Platform.OS === "web"
-            ? "http://localhost:5000"
-            : "http://10.0.2.2:5000";
-      }
+      // Usar o API_URL que já está importando do arquivo de configuração
+      // API_URL já utiliza o SERVER_IP do arquivo meuIp.ts
+      console.log(
+        `Buscando pedidos para o usuário ${userId} no endpoint: ${API_URL}/pedidos/usuario/${userId}`
+      );
 
       const response = await axios.get<Pedido[]>(
-        `${apiBaseUrl}/pedidos/usuario/${userId}`
+        `${API_URL}/pedidos/usuario/${userId}`
       );
 
       if (response.status === 200) {
@@ -90,6 +87,7 @@ const HistoricoPedidos: React.FC<{ navigation: any }> = ({ navigation }) => {
             new Date(b.data).getTime() - new Date(a.data).getTime()
         );
         setPedidos(pedidosOrdenados);
+        console.log(`Encontrados ${pedidosOrdenados.length} pedidos`);
       }
     } catch (error) {
       console.error("Erro ao buscar histórico de pedidos:", error);
