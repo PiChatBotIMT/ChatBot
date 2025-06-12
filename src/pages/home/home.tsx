@@ -226,14 +226,14 @@ const Home: React.FC = () => {
                 <Text
                   style={{
                     marginRight: 5,
-                    color: "#007BFF",
+                    color: "#f9f9f9",
                     fontSize: Platform.OS === "web" ? 16 : 12,
                     display: Platform.OS === "web" ? "flex" : "none",
                   }}
                 >
                   Bem-vindo, {user.nome || "Usuário"}
                 </Text>
-                <Ionicons name="person-circle" size={24} color="#007BFF" />
+                <Ionicons name="person-circle" size={24} color="#f9f9f9" />
                 <TouchableOpacity
                   style={{ marginLeft: 5 }}
                   onPress={handleLogout}
@@ -257,8 +257,8 @@ const Home: React.FC = () => {
                 }}
                 onPress={() => navigation.navigate("Login")}
               >
-                <Ionicons name="person-outline" size={24} color="#007BFF" />
-                <Text style={{ color: "#007BFF", fontSize: 16, marginLeft: 5 }}>
+                <Ionicons name="person-outline" size={24} color="#f9f9f9" />
+                <Text style={{ color: "#f9f9f9", fontSize: 16, marginLeft: 5 }}>
                   Login
                 </Text>
               </TouchableOpacity>
