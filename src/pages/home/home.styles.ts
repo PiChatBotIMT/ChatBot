@@ -20,8 +20,8 @@ export default StyleSheet.create({
     paddingBottom: 80, // Adiciona espaço para o footer
   },
   botIcon: {
-    width: isWeb ? 120 : 80,
-    height: isWeb ? 120 : 80,
+    width: isWeb ? 200 : 150,
+    height: isWeb ? 200 : 150,
     marginTop: 20,
     marginBottom: 10,
   },
@@ -67,10 +67,10 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    shadowColor: "#FAA41F",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
   },
   cardIcon: {
     width: iconSize,
