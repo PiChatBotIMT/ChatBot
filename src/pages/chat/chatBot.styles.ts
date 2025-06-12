@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   },
   message: {
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 7,
     marginBottom: 10,
     maxWidth: "80%",
     backgroundColor: "#fff",
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   botMessage: {
     alignSelf: "flex-start",
-    backgroundColor: "#e6e6e6",
+    backgroundColor: "#ffff",
     borderLeftWidth: 4,
     borderLeftColor: "#FAA41F",
   },
