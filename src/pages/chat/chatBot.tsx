@@ -514,6 +514,7 @@ const Chatbot: React.FC = () => {
 
       const userData = JSON.parse(userDataString);
       const userId = userData.userId;
+      const userName = userData.name || userData.nome;
 
       console.log("Dados do usuário:", userData);
 
@@ -541,6 +542,7 @@ const Chatbot: React.FC = () => {
         total: getTotalOrderValue(),
         descricao: orderDescription,
         usuarioId: userId,
+        nomeUsuario: userName, // <-- adicione aqui
       };
 
       console.log("Dados do pedido a enviar:", orderData);

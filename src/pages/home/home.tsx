@@ -23,6 +23,7 @@ import {
   NavigationProp,
   useRoute,
   useNavigationState,
+  useFocusEffect,
 } from "@react-navigation/native";
 
 type RootStackParamList = {
@@ -147,11 +148,14 @@ const Home: React.FC = () => {
     isAdmin: boolean;
     nome?: string;
   } | null>(null);
-  useEffect(() => {
-    AsyncStorage.getItem("user").then((data) => {
-      if (data) setUser(JSON.parse(data));
-    });
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.getItem("@cantina_user_auth").then((data) => {
+        if (data) setUser(JSON.parse(data));
+        else setUser(null);
+      });
+    }, [])
+  );
 
   useEffect(() => {
     if (user) {
@@ -163,14 +167,8 @@ const Home: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      // Limpar dados do usuário do AsyncStorage
-      await AsyncStorage.removeItem("user");
       await AsyncStorage.removeItem("@cantina_user_auth");
-
-      // Atualizar o estado do usuário para null
       setUser(null);
-
-      // Use navigation diretamente
       navigation.navigate("HomeMenu");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);

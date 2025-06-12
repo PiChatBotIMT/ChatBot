@@ -55,22 +55,19 @@ const Login = ({
 
   const handleSuccessfulLogin = async (userData: any) => {
     try {
-      // Certifique-se de que os dados do usuário sigam uma estrutura consistente
       const userAuthData = {
-        userId: userData._id || userData.id,
+        userId: userData.userId || userData._id || userData.id,
         email: userData.email,
         name: userData.nome || userData.name,
-        isAuthenticated: true, // Esta flag é importante!
-        timestamp: new Date().toISOString(), // Útil para verificações de expiração, se necessário
+        isAuthenticated: true,
+        timestamp: new Date().toISOString(),
       };
 
       // Salvar no AsyncStorage
       await AsyncStorage.setItem(USER_AUTH_KEY, JSON.stringify(userAuthData));
 
-      // Opcional: Exibir mensagem de confirmação
       console.log("Dados de autenticação salvos com sucesso:", userAuthData);
 
-      // Navegar para a tela inicial
       navigation.navigate("HomeMenu");
     } catch (error) {
       console.error("Erro ao salvar dados de autenticação:", error);
@@ -85,7 +82,6 @@ const Login = ({
         return;
       }
 
-      // Login do administrador
       if (email === ADMIN_EMAIL && senha === ADMIN_SENHA) {
         const adminData = {
           _id: "admin123", // ID fixo para o administrador
@@ -119,12 +115,26 @@ const Login = ({
         try {
           console.log(`Tentando fazer login em: ${apiBaseUrl}/login`);
 
-          const response = await axios.post(`${apiBaseUrl}/login`, {
-            email,
-            senha,
-          });
+          const response = await axios.post<{ nome: string; userId: string }>(
+            `${apiBaseUrl}/login`,
+            {
+              email,
+              senha,
+            }
+          );
 
           if (response.status === 200) {
+            const { nome, userId } = response.data;
+            await AsyncStorage.setItem(
+              "@cantina_user_auth",
+              JSON.stringify({
+                isAuthenticated: true,
+                name: nome,
+                userId,
+                email,
+              })
+            );
+            setIsAdmin(false, email, nome);
             showAlert("Sucesso", "Login realizado com sucesso!", () =>
               handleSuccessfulLogin(response.data)
             );
@@ -132,7 +142,6 @@ const Login = ({
         } catch (error: any) {
           console.error("Erro ao fazer login:", error);
           if (error.response) {
-            // O servidor respondeu com um código de status diferente de 2xx
             showAlert(
               "Erro",
               error.response.data.message || "Credenciais inválidas."

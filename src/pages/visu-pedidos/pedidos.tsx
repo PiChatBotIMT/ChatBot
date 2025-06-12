@@ -9,6 +9,14 @@ const PedidoCard = ({ pedido }: { pedido: any }) => (
   <View style={styles.card}>
     <Text style={styles.cardTitle}>Pedido #{pedido._id.slice(-5)}</Text>
 
+    {/* Nome do usuário */}
+    <View style={styles.cardLine}>
+      <Text style={styles.cardLabel}>Cliente:</Text>
+      <Text style={styles.cardValue}>
+        {pedido.nomeUsuario || "Não informado"}
+      </Text>
+    </View>
+
     <View style={styles.cardLine}>
       <Text style={styles.cardLabel}>Data:</Text>
       <Text style={styles.cardValue}>

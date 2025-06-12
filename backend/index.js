@@ -46,6 +46,7 @@ const PedidoSchema = new mongoose.Schema({
   total: Number,
   data: { type: Date, default: Date.now },
   usuarioId: { type: String, required: true },
+  nomeUsuario: String,
   descricao: String,
 });
 
@@ -140,7 +141,8 @@ app.post("/login", async (req, res) => {
     console.log(`Login bem-sucedido para email: ${email}`);
     res.status(200).json({
       message: "Login bem-sucedido",
-      nome: usuario.nome, // Return the user's name
+      nome: usuario.nome,
+      userId: usuario._id,
     });
   } catch (err) {
     console.error("Erro no processamento do login:", err);
