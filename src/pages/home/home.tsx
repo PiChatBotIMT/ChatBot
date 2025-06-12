@@ -331,8 +331,9 @@ const Home: React.FC = () => {
           )}
         </Stack.Screen>
       </Stack.Navigator>
-      {/* Só mostra o footer se NÃO estiver no Chatbot */}
-      {currentRouteName !== "Chatbot" && <SocialMediaFooter />}
+      {currentRouteName !== "Chatbot" && currentRouteName !== "Cardapio" && (
+        <SocialMediaFooter />
+      )}
     </View>
   );
 };

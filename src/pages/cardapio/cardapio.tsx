@@ -228,56 +228,57 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
           <Text style={styles.addBtnText}>Adicionar Item</Text>
         </TouchableOpacity>
       )}
-      <FlatList
-        data={items}
-        keyExtractor={(item, index) =>
-          item._id ? `item-${item._id}` : `temp-item-${index}`
-        }
-        numColumns={numColumns}
-        renderItem={({ item }) => {
-          const imageUri = item.image
-            ? `${API_URL}${item.image}`
-            : require("../../image/no-image.png");
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={items}
+          keyExtractor={(item, index) =>
+            item._id ? `item-${item._id}` : `temp-item-${index}`
+          }
+          numColumns={numColumns}
+          renderItem={({ item }) => {
+            const imageUri = item.image
+              ? `${API_URL}${item.image}`
+              : require("../../image/no-image.png");
 
-          return (
-            <View style={styles.card}>
-              <Image
-                source={
-                  typeof imageUri === "string" ? { uri: imageUri } : imageUri
-                }
-                style={styles.image}
-                onError={(e) =>
-                  console.log("Erro ao carregar imagem:", e.nativeEvent.error)
-                }
-              />
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemDesc}>{item.description}</Text>
-              <Text style={styles.itemPrice}>
-                R${" "}
-                {item.price.toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </Text>
-              {isAdmin && (
-                <View style={styles.adminActions}>
-                  <TouchableOpacity onPress={() => abrirEdicao(item)}>
-                    <Text style={styles.editBtn}>Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (item._id) removerItem(item._id);
-                    }}
-                  >
-                    <Text style={styles.removeBtn}>Remover</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          );
-        }}
-      />
-
+            return (
+              <View style={styles.card}>
+                <Image
+                  source={
+                    typeof imageUri === "string" ? { uri: imageUri } : imageUri
+                  }
+                  style={styles.image}
+                  onError={(e) =>
+                    console.log("Erro ao carregar imagem:", e.nativeEvent.error)
+                  }
+                />
+                <Text style={styles.itemName}>{item.name}</Text>
+                <Text style={styles.itemDesc}>{item.description}</Text>
+                <Text style={styles.itemPrice}>
+                  R${" "}
+                  {item.price.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Text>
+                {isAdmin && (
+                  <View style={styles.adminActions}>
+                    <TouchableOpacity onPress={() => abrirEdicao(item)}>
+                      <Text style={styles.editBtn}>Editar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (item._id) removerItem(item._id);
+                      }}
+                    >
+                      <Text style={styles.removeBtn}>Remover</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            );
+          }}
+        />
+      </View>
       {/* Modal de edição */}
       <Modal
         visible={modalVisible}
