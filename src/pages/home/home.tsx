@@ -201,7 +201,7 @@ const Home: React.FC = () => {
               >
                 <Image
                   source={require("../../image/logo-poliedro.png")}
-                  style={{ width: 80, height: 50, resizeMode: "contain" }}
+                  style={{ width: 120, height: 70, resizeMode: "contain" }}
                 />
                 {route.name !== "HomeMenu" && (
                   <TouchableOpacity
