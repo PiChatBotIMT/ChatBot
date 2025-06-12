@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import styles from "./chatBot.styles";
@@ -805,67 +806,78 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <ImageBackground
+      source={require("../../image/background-chat.png")}
+      style={{ flex: 1 }}
+      resizeMode="cover"
     >
-      <View style={styles.chatSection}>
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.message,
-                item.sender === "user" ? styles.userMessage : styles.botMessage,
-              ]}
-            >
-              <Text style={styles.messageText}>{item.text}</Text>
-            </View>
-          )}
-          contentContainerStyle={styles.chatContainer}
-        />
-      </View>
-
-      {isLoading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#28a745" />
-        </View>
-      )}
-
-      {renderCurrentOrderStep()}
-
-      {orderStep === "idle" && (
-        <>
-          {isAuthenticated ? (
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.input}
-                placeholder="Digite sua mensagem..."
-                value={input}
-                onChangeText={setInput}
-              />
-              <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                <Text style={styles.sendButtonText}>Enviar</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.loginWarningContainer}>
-              <Text style={styles.loginWarningText}>
-                Você precisa estar logado para usar o chat.
-              </Text>
-              <TouchableOpacity
-                style={styles.loginButton}
-                onPress={navigateToLogin}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.chatSection}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.message,
+                  item.sender === "user"
+                    ? styles.userMessage
+                    : styles.botMessage,
+                ]}
               >
-                <Text style={styles.loginButtonText}>Fazer Login</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </>
-      )}
-    </KeyboardAvoidingView>
+                <Text style={styles.messageText}>{item.text}</Text>
+              </View>
+            )}
+            contentContainerStyle={styles.chatContainer}
+          />
+        </View>
+
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#28a745" />
+          </View>
+        )}
+
+        {renderCurrentOrderStep()}
+
+        {orderStep === "idle" && (
+          <>
+            {isAuthenticated ? (
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Digite sua mensagem..."
+                  value={input}
+                  onChangeText={setInput}
+                />
+                <TouchableOpacity
+                  style={styles.sendButton}
+                  onPress={handleSend}
+                >
+                  <Text style={styles.sendButtonText}>Enviar</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.loginWarningContainer}>
+                <Text style={styles.loginWarningText}>
+                  Você precisa estar logado para usar o chat.
+                </Text>
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={navigateToLogin}
+                >
+                  <Text style={styles.loginButtonText}>Fazer Login</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        )}
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 };
 

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
+    // backgroundColor: "#f9f9f9",
   },
   chatContainer: {
     padding: 10,
@@ -33,8 +33,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     backgroundColor: "#FAA41F",
-    paddingHorizontal: '10%', // ou ajuste conforme necessário
-  
+    paddingHorizontal: "10%", // ou ajuste conforme necessário
   },
   input: {
     flex: 1,
@@ -45,7 +44,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginRight: 10,
     backgroundColor: "#fff",
-
   },
   sendButton: {
     backgroundColor: "#007bff",
