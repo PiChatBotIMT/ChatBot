@@ -45,10 +45,14 @@ type OrderStep =
   | "selecting_payment"
   | "final_confirmation";
 
+function generateUniqueId() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
 const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState([
     {
-      id: "1",
+      id: generateUniqueId(),
       text: "Bem-vindo à cantina, segue as opções:\n1 - Consultar cardápio\n2 - Fazer pedido\n3 - Visualizar histórico de pedidos",
       sender: "bot",
     },
@@ -71,6 +75,10 @@ const Chatbot: React.FC = () => {
   const ORDER_DESCRIPTION_KEY = "@cantina_order_description";
   const ORDER_STEP_KEY = "@cantina_order_step";
   const PAYMENT_METHOD_KEY = "@cantina_payment_method";
+
+  // Adicione um contador de tentativas
+  const [fetchAttempts, setFetchAttempts] = useState(0);
+  const maxAttempts = 3;
 
   useEffect(() => {
     fetchMenuItems();
@@ -118,7 +126,19 @@ const Chatbot: React.FC = () => {
       // Carregar mensagens
       const savedMessages = await AsyncStorage.getItem(CHAT_STORAGE_KEY);
       if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
+        // Garante que todas as mensagens tenham IDs únicos
+        const parsed = JSON.parse(savedMessages);
+        const ids = new Set();
+        const fixedMessages = parsed.map((msg: any) => {
+          let id = msg.id;
+          // Se não tem id ou já existe, gera um novo
+          if (!id || ids.has(id)) {
+            id = generateUniqueId();
+          }
+          ids.add(id);
+          return { ...msg, id };
+        });
+        setMessages(fixedMessages);
       }
 
       // Carregar itens selecionados
@@ -214,9 +234,13 @@ const Chatbot: React.FC = () => {
   const getApiBaseUrl = () => {
     if (Platform.OS === "web") {
       return "http://localhost:5000";
+    } else {
+      // Em dispositivos reais, use o IP da sua máquina na rede local
+      return `http://${SERVER_IP}:5000`;
     }
-    return `http://${SERVER_IP}:5000`;
   };
+
+  // Modifique também a função fetchMenuItems para melhor tratamento de erros:
 
   const fetchMenuItems = async () => {
     try {
@@ -225,28 +249,73 @@ const Chatbot: React.FC = () => {
       const apiBaseUrl = getApiBaseUrl();
       console.log("Tentando buscar cardápio de:", `${apiBaseUrl}/cardapio`);
 
-      const response = await fetch(`${apiBaseUrl}/cardapio`);
+      // Adicione um timeout para evitar que a solicitação fique pendente por muito tempo
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos de timeout
+
+      const response = await fetch(`${apiBaseUrl}/cardapio`, {
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      clearTimeout(timeoutId); // Limpa o timeout se a solicitação for concluída
 
       if (response.ok) {
         const data = await response.json();
+        console.log(`Cardápio carregado com sucesso: ${data.length} itens`);
         setMenuItems(data);
       } else {
-        throw new Error("Falha ao buscar cardápio");
+        console.error("Erro ao buscar cardápio. Status:", response.status);
+        throw new Error(`Falha ao buscar cardápio: ${response.status}`);
       }
     } catch (error) {
-      console.error("Erro ao buscar cardápio:", error);
-      addBotMessage(
-        "Não foi possível carregar o cardápio. Tente novamente mais tarde."
+      console.error(
+        "Erro ao buscar cardápio:",
+        error.message || "Erro desconhecido"
       );
+
+      // Mensagem mais informativa para o usuário
+      let errorMessage = "Não foi possível carregar o cardápio.";
+
+      if (error.name === "AbortError") {
+        errorMessage += "A solicitação expirou. Verifique sua conexão.";
+      } else if (
+        error.message &&
+        error.message.includes("Network request failed")
+      ) {
+        errorMessage +=
+          "Verifique sua conexão de rede ou o servidor pode estar indisponível.";
+      } else {
+        errorMessage += "Tente novamente mais tarde.";
+      }
+
+      addBotMessage(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (fetchAttempts < maxAttempts) {
+      fetchMenuItems().catch(() => {
+        setFetchAttempts((prev) => prev + 1);
+      });
+    } else if (fetchAttempts === maxAttempts && menuItems.length === 0) {
+      addBotMessage(
+        "Não foi possível carregar o cardápio após múltiplas tentativas. Por favor, verifique sua conexão ou tente novamente mais tarde."
+      );
+    }
+  }, [fetchAttempts]);
+
+  const retryFetchingMenu = () => {
+    setFetchAttempts(0);
+    fetchMenuItems();
+  };
+
   const addBotMessage = (text: string) => {
     setMessages((prevMessages) => [
       ...prevMessages,
-      { id: Date.now().toString(), text, sender: "bot" },
+      { id: generateUniqueId(), text, sender: "bot" },
     ]);
   };
 
@@ -273,7 +342,7 @@ const Chatbot: React.FC = () => {
     }
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: generateUniqueId(),
       text: input,
       sender: "user",
     };
@@ -317,7 +386,7 @@ const Chatbot: React.FC = () => {
   const startOrderProcess = async () => {
     try {
       setIsLoading(true);
-      // Certifique-se de que temos os itens do cardápio
+
       if (menuItems.length === 0) {
         await fetchMenuItems();
       }
@@ -335,16 +404,13 @@ const Chatbot: React.FC = () => {
 
   const handleItemSelection = (item: MenuItem) => {
     setSelectedItems((prevItems) => {
-      // Verificar se o item já está selecionado
       const existingItem = prevItems.find((i) => i._id === item._id);
 
       if (existingItem) {
-        // Se já existe, aumentar a quantidade
         return prevItems.map((i) =>
           i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
         );
       } else {
-        // Se não existe, adicionar com quantidade 1
         return [...prevItems, { ...item, quantity: 1 }];
       }
     });
@@ -355,11 +421,9 @@ const Chatbot: React.FC = () => {
 
     setSelectedItems((prevItems) => {
       if (newQuantity === 0) {
-        // Remover o item se a quantidade for zero
         return prevItems.filter((item) => item._id !== itemId);
       }
 
-      // Atualizar a quantidade do item
       return prevItems.map((item) =>
         item._id === itemId ? { ...item, quantity: newQuantity } : item
       );
@@ -434,7 +498,6 @@ const Chatbot: React.FC = () => {
       setIsLoading(true);
       addBotMessage("Enviando seu pedido...");
 
-      // Obter o ID do usuário logado
       const userDataString = await AsyncStorage.getItem("@cantina_user_auth");
       if (!userDataString) {
         addBotMessage(
@@ -476,12 +539,11 @@ const Chatbot: React.FC = () => {
         metodoPagamento: paymentMethod,
         total: getTotalOrderValue(),
         descricao: orderDescription,
-        usuarioId: userId, // Adicionando o ID do usuário ao pedido
+        usuarioId: userId,
       };
 
       console.log("Dados do pedido a enviar:", orderData);
 
-      // Definir a URL correta com base na plataforma
       const apiBaseUrl = getApiBaseUrl();
 
       const response = await fetch(`${apiBaseUrl}/pedidos`, {
@@ -552,8 +614,11 @@ const Chatbot: React.FC = () => {
           nestedScrollEnabled={true}
         >
           <View style={styles.menuItemsContainer}>
-            {menuItems.map((item) => (
-              <View key={item._id} style={styles.menuItemCard}>
+            {menuItems.map((item, index) => (
+              <View
+                key={`menu-item-${item._id || index}`}
+                style={styles.menuItemCard}
+              >
                 <View style={styles.menuItemInfo}>
                   <Text style={styles.menuItemName}>{item.name}</Text>
                   <Text style={styles.menuItemDescription}>
@@ -578,8 +643,11 @@ const Chatbot: React.FC = () => {
           {selectedItems.length > 0 && (
             <>
               <Text style={styles.sectionTitle}>Itens selecionados:</Text>
-              {selectedItems.map((item) => (
-                <View key={item._id} style={styles.selectedItemRow}>
+              {selectedItems.map((item, index) => (
+                <View
+                  key={`selected-item-${item._id || index}`}
+                  style={styles.selectedItemRow}
+                >
                   <Text style={styles.selectedItemName}>{item.name}</Text>
                   <View style={styles.quantityControl}>
                     <TouchableOpacity
@@ -638,9 +706,9 @@ const Chatbot: React.FC = () => {
     <View style={styles.orderForm}>
       <ScrollView nestedScrollEnabled={true}>
         <Text style={styles.formTitle}>Método de Pagamento</Text>
-        {paymentOptions.map((option) => (
+        {paymentOptions.map((option, index) => (
           <TouchableOpacity
-            key={option}
+            key={`payment-${option}`}
             style={[
               styles.paymentOption,
               paymentMethod === option && styles.paymentOptionSelected,

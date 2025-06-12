@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "piSwen",
-    "slug": "piSwen",
+    "name": "pichatbot",
+    "slug": "pichatbot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/image/bot-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "sdkVersion": "53.0.0",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./src/image/bot-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +17,15 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.anonymous.pichatbot"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/image/bot-icon.png"
     }
   }
 }

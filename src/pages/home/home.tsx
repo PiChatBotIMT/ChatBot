@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Platform,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Chatbot from "../chat/chatBot";
 import styles from "./home.styles";
@@ -14,6 +21,8 @@ import {
   CommonActions,
   useNavigation,
   NavigationProp,
+  useRoute,
+  useNavigationState,
 } from "@react-navigation/native";
 
 type RootStackParamList = {
@@ -58,56 +67,65 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
   isAdmin,
 }) => {
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../image/bot-icon.png")}
-        style={styles.botIcon}
-      />
-
-      <Text style={styles.welcomeText}>Bem-Vindo ao Restaurante</Text>
-
-      <TouchableOpacity
-        style={styles.chatButton}
-        onPress={() => navigation.navigate("Chatbot")}
-      >
-        <Text style={styles.chatButtonText}>Como posso ajudar?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate("Cardapio")}
-      >
+    <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      style={{ flex: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.container}>
         <Image
-          source={require("../../image/menu-icon.png")}
-          style={styles.cardIcon}
-        />
-        <Text style={styles.cardTitle}>Cardápio</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.card} 
-        onPress={() => navigation.navigate("HistoricoPedidos")}
-      >
-        <Image
-          source={require("../../image/history-icon.png")}
-          style={styles.cardIcon}
+          source={require("../../image/bot-icon.png")}
+          style={styles.botIcon}
+          resizeMode="contain"
         />
 
-        <Text style={styles.cardTitle}>Histórico</Text>
-      </TouchableOpacity>
-      {isAdmin && (
+        <Text style={styles.welcomeText}>Bem-Vindo ao Restaurante</Text>
+
         <TouchableOpacity
-          style={styles.card}
-          onPress={() => navigation.navigate("Pedidos")}
+          style={styles.chatButton}
+          onPress={() => navigation.navigate("Chatbot")}
         >
-          <Image
-            source={require("../../image/history-icon.png")}
-            style={styles.cardIcon}
-          />
-          <Text style={styles.cardTitle}>Pedidos</Text>
+          <Text style={styles.chatButtonText}>Como posso ajudar?</Text>
         </TouchableOpacity>
-      )}
-    </View>
+
+        <View style={styles.cardsContainer}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("Cardapio")}
+          >
+            <Image
+              source={require("../../image/menu-icon.png")}
+              style={styles.cardIcon}
+            />
+            <Text style={styles.cardTitle}>Cardápio</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("HistoricoPedidos")}
+          >
+            <Image
+              source={require("../../image/history-icon.png")}
+              style={styles.cardIcon}
+            />
+            <Text style={styles.cardTitle}>Histórico</Text>
+          </TouchableOpacity>
+
+          {isAdmin && (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => navigation.navigate("Pedidos")}
+            >
+              <Image
+                source={require("../../image/history-icon.png")}
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardTitle}>Pedidos</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -160,6 +178,12 @@ const Home: React.FC = () => {
     }
   };
 
+  // Pegue o nome da rota ativa do stack
+  const currentRouteName = useNavigationState((state) => {
+    if (!state || !state.routes || typeof state.index !== "number") return "";
+    const route = state.routes[state.index];
+    return route?.name || "";
+  });
   return (
     <View style={{ flex: 1 }}>
       <Stack.Navigator
@@ -167,18 +191,17 @@ const Home: React.FC = () => {
         initialRouteName="HomeMenu"
         screenOptions={({ navigation, route }) => ({
           headerLeft: () => {
-            // Always show the logo on the left
             return (
               <View
                 style={{
-                  marginLeft: 15,
+                  marginLeft: 10,
                   flexDirection: "row",
                   alignItems: "center",
                 }}
               >
                 <Image
                   source={require("../../image/logo-poliedro.png")}
-                  style={{ width: 100, height: 100, resizeMode: "contain" }}
+                  style={{ width: 80, height: 50, resizeMode: "contain" }}
                 />
                 {route.name !== "HomeMenu" && (
                   <TouchableOpacity
@@ -197,20 +220,32 @@ const Home: React.FC = () => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginRight: 15,
+                  marginRight: 10,
                 }}
               >
                 <Text
-                  style={{ marginRight: 10, color: "#007BFF", fontSize: 16 }}
+                  style={{
+                    marginRight: 5,
+                    color: "#007BFF",
+                    fontSize: Platform.OS === "web" ? 16 : 12,
+                    display: Platform.OS === "web" ? "flex" : "none",
+                  }}
                 >
                   Bem-vindo, {user.nome || "Usuário"}
                 </Text>
                 <Ionicons name="person-circle" size={24} color="#007BFF" />
                 <TouchableOpacity
-                  style={{ marginLeft: 8 }}
+                  style={{ marginLeft: 5 }}
                   onPress={handleLogout}
                 >
-                  <Text style={{ color: "red", fontSize: 16 }}>Sair</Text>
+                  <Text
+                    style={{
+                      color: "red",
+                      fontSize: Platform.OS === "web" ? 16 : 14,
+                    }}
+                  >
+                    Sair
+                  </Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -237,6 +272,8 @@ const Home: React.FC = () => {
             shadowRadius: 3,
           },
           headerTitleAlign: "center",
+          headerMode: "float",
+          cardStyle: { backgroundColor: "#f5f5f5" },
         })}
       >
         <Stack.Screen name="HomeMenu" options={{}}>
@@ -296,7 +333,8 @@ const Home: React.FC = () => {
           )}
         </Stack.Screen>
       </Stack.Navigator>
-      <SocialMediaFooter />
+      {/* Só mostra o footer se NÃO estiver no Chatbot */}
+      {currentRouteName !== "Chatbot" && <SocialMediaFooter />}
     </View>
   );
 };

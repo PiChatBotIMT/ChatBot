@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import styles from "./cardapio.styles";
 import axios from "axios";
-import { launchImageLibrary } from "react-native-image-picker";
 import { API_URL } from "../../config/api";
-
+import * as ImagePicker from "expo-image-picker";
 type CardapioItem = {
   _id?: string;
   name: string;
@@ -53,27 +52,24 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
   };
 
   const pickImage = async () => {
-    console.log("Picking image...");
-    launchImageLibrary({ mediaType: "photo" }, (response) => {
-      console.log("Image picker response:", response);
-      if (response.assets && response.assets.length > 0) {
-        console.log("Selected image details:", {
-          uri: response.assets[0].uri,
-          type: response.assets[0].type,
-          fileName: response.assets[0].fileName,
-          fileSize: response.assets[0].fileSize,
-        });
-        setSelectedImage(response.assets[0]);
-      } else if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.errorCode) {
-        console.error(
-          "ImagePicker Error:",
-          response.errorCode,
-          response.errorMessage
-        );
-      }
+    // Solicita permissão
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert("Permissão negada", "Você precisa permitir acesso às fotos.");
+      return;
+    }
+
+    // Abre a galeria
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "images",
+      allowsEditing: true,
+      quality: 1,
     });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setSelectedImage(result.assets[0]);
+    }
   };
   useEffect(() => {
     console.log(`Tentando carregar cardápio de: ${API_URL}/cardapio`);
@@ -234,7 +230,9 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
       )}
       <FlatList
         data={items}
-        keyExtractor={(item) => item._id || Math.random().toString()}
+        keyExtractor={(item, index) =>
+          item._id ? `item-${item._id}` : `temp-item-${index}`
+        }
         numColumns={numColumns}
         renderItem={({ item }) => {
           const imageUri = item.image
@@ -266,7 +264,11 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
                   <TouchableOpacity onPress={() => abrirEdicao(item)}>
                     <Text style={styles.editBtn}>Editar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => removerItem(item._id)}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (item._id) removerItem(item._id);
+                    }}
+                  >
                     <Text style={styles.removeBtn}>Remover</Text>
                   </TouchableOpacity>
                 </View>
@@ -345,7 +347,9 @@ const Cardapio = ({ isAdmin }: { isAdmin: boolean }) => {
                   editItem?.price === 0 && styles.inputRequired,
                 ]}
                 value={
-                  editItem?.price === 0 ? "" : formatarPreco(editItem?.price)
+                  editItem?.price === 0
+                    ? ""
+                    : formatarPreco(editItem?.price ?? 0)
                 }
                 onChangeText={(text) => {
                   // Remove tudo exceto números

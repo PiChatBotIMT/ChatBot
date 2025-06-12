@@ -1,79 +1,87 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from "react-native";
+
+const { width } = Dimensions.get("window");
+
+// Ajusta tamanhos baseados na plataforma e tamanho da tela
+const isWeb = Platform.OS === "web";
+const cardSize = isWeb ? 160 : width < 380 ? width * 0.38 : 150;
+const iconSize = isWeb ? 60 : width < 380 ? 50 : 55;
 
 export default StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#e6e6e6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+    paddingBottom: 80, // Adiciona espaço para o footer
   },
   botIcon: {
-    width: 150,
-    height: 150,
+    width: isWeb ? 120 : 80,
+    height: isWeb ? 120 : 80,
+    marginTop: 20,
     marginBottom: 10,
   },
   welcomeText: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 10,
-    textAlign: 'center',
-    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
-    
-
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#333",
   },
   chatButton: {
-    backgroundColor: '#fff',
-    borderColor: '#FAA41F',
-    borderWidth: 1.5,
-    borderRadius: 40,
-    paddingVertical: 20,
-  paddingHorizontal: '10%',
-    marginBottom: 15,
-    shadowColor: '#FAA41F',      // sombra amarela
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,          // mais opaca
-    shadowRadius: 12,             // mais espalhada
-    elevation: 8, 
+    backgroundColor: "#FAA41F",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 30,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   chatButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000',
-    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
-    letterSpacing: -0.5, // diminui o espaçamento entre as letras
-
-
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
-card: {
-  backgroundColor: '#fff',
-  // borderColor: '#FAA41F',
-  // borderWidth: 1.5,
-  width: '28%', // exemplo para deixar mais quadrado
-  borderRadius: 10,
-  paddingVertical: 40,
-  paddingHorizontal: '20%',
-  marginVertical: 8,
-  alignItems: 'center',
-  shadowColor: '#FAA41F',      // sombra amarela
-  shadowOffset: { width: 0, height: 0 },
-  shadowOpacity: 0.5,          // mais opaca
-  shadowRadius: 12,             // mais espalhada
-  elevation: 8,                // mais forte no Android
-},
+  cardsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "100%",
+    maxWidth: isWeb ? 800 : "100%",
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: "white",
+    width: cardSize,
+    height: cardSize,
+    borderRadius: 10,
+    padding: 15,
+    margin: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
   cardIcon: {
-    width: 26,
-    height: 26,
-    marginBottom: 8,
-    
+    width: iconSize,
+    height: iconSize,
+    marginBottom: 15,
+    resizeMode: "contain",
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-    fontFamily: 'monospace', // fonte tipo máquina de escrever, nativa
-    letterSpacing: -0.5, // diminui o espaçamento entre as letras
-
-
+    fontWeight: "bold",
+    color: "#333",
+    textAlign: "center",
   },
 });
