@@ -94,7 +94,7 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
             onPress={() => navigation.navigate("Cardapio")}
           >
             <Image
-              source={require("../../image/menu-icon.png")}
+              source={require("../../image/cardapio(2).png")}
               style={styles.cardIcon}
             />
             <Text style={styles.cardTitle}>Cardápio</Text>
@@ -105,7 +105,7 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
             onPress={() => navigation.navigate("HistoricoPedidos")}
           >
             <Image
-              source={require("../../image/history-icon.png")}
+              source={require("../../image/relogio.png")}
               style={styles.cardIcon}
             />
             <Text style={styles.cardTitle}>Histórico</Text>
@@ -117,7 +117,7 @@ const HomeMenu: React.FC<{ navigation: any; isAdmin: boolean }> = ({
               onPress={() => navigation.navigate("Pedidos")}
             >
               <Image
-                source={require("../../image/history-icon.png")}
+                source={require("../../image/pedido.png")}
                 style={styles.cardIcon}
               />
               <Text style={styles.cardTitle}>Pedidos</Text>
